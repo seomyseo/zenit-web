@@ -1,0 +1,75 @@
+{
+  "erpCode": "0021-0312",
+  "slug": "bomba-periferica-cobre-1-2hp",
+  "model": "ZBP-001C",
+  "name": "Bomba periférica de cobre 1/2 HP, 110-220 V",
+  "group": "agricola",
+  "family": "periferica",
+  "variantOf": "0021-0316",
+  "shortDescription": "Bomba periférica eléctrica de 1/2 HP con motor de bobinas de cobre, para agua limpia. Funciona a 110/220 V.",
+  "features": [
+    "Motor con bobinas de cobre.",
+    "Tapón de purga.",
+    "Soporte para fijación.",
+    "Para agua limpia."
+  ],
+  "applications": [
+    "Suministro de agua a tanques o cisternas."
+  ],
+  "warranty": "1 año, directa por el distribuidor",
+  "specGroups": [
+    {
+      "title": "Especificaciones",
+      "rows": [
+        {
+          "label": "Potencia",
+          "value": "1/2 HP (370 W)"
+        },
+        {
+          "label": "Voltaje",
+          "value": "110/220 V"
+        },
+        {
+          "label": "Frecuencia",
+          "value": "60 Hz"
+        },
+        {
+          "label": "Altura máxima",
+          "value": "35 m"
+        },
+        {
+          "label": "Caudal máximo",
+          "value": "35 L/min"
+        },
+        {
+          "label": "Bobinado del motor",
+          "value": "Cobre"
+        },
+        {
+          "label": "Fluido",
+          "value": "Agua limpia, sin partículas abrasivas"
+        }
+      ]
+    },
+    {
+      "title": "Instalación",
+      "rows": [
+        {
+          "label": "Lugar",
+          "value": "Cubierto, protegido de la intemperie"
+        },
+        {
+          "label": "Temperatura ambiente máxima",
+          "value": "40 °C"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/bomba-periferica-cobre-1-2hp.png",
+      "alt": "Bomba periférica eléctrica Zenit de 1/2 HP, color verde"
+    }
+  ],
+  "status": "published"
+}

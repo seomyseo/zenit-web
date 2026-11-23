@@ -1,0 +1,188 @@
+{
+  "erpCode": "0021-0320",
+  "slug": "bomba-sumergible-solar-cobre-1-2hp",
+  "model": "ZBS-001S",
+  "name": "Bomba sumergible solar de cobre 1/2 HP con 2 paneles",
+  "group": "agricola",
+  "family": "sumergible",
+  "shortDescription": "Kit de bombeo solar: bomba sumergible de 6 etapas y 3\" de diámetro, con motor eléctrico solar de 72 V DC, 2 paneles solares de 590 W y controlador.",
+  "features": [
+    "Bomba sumergible solar.",
+    "Impulsor cerrado.",
+    "Diámetro de descarga de 1\".",
+    "Motor eléctrico solar de 0,5 HP.",
+    "Celdas solares policristalinas.",
+    "Marco del panel de aluminio anodizado."
+  ],
+  "applications": [
+    "Uso agrícola: por su autonomía, ideal para sitios remotos sin acceso a la electricidad.",
+    "Sistemas de riego para cultivos y pastizales.",
+    "Abastecimiento de agua para animales."
+  ],
+  "includes": [
+    "2 paneles solares de 590 W",
+    "Controlador solar"
+  ],
+  "warranty": "1 año, directa por el distribuidor",
+  "specGroups": [
+    {
+      "title": "Datos de la bomba",
+      "rows": [
+        {
+          "label": "Tipo de bomba",
+          "value": "Centrífuga sumergible solar"
+        },
+        {
+          "label": "Tipo de impulsor",
+          "value": "Cerrado"
+        },
+        {
+          "label": "Número de etapas",
+          "value": "6"
+        },
+        {
+          "label": "Diámetro de descarga",
+          "value": "1\""
+        },
+        {
+          "label": "Altura máxima (H. máx.)",
+          "value": "33 m"
+        },
+        {
+          "label": "Caudal máximo (Q. máx.)",
+          "value": "64 L/min"
+        },
+        {
+          "label": "Diámetro externo de la bomba",
+          "value": "3\""
+        },
+        {
+          "label": "Uso",
+          "value": "Agrícola / hogar"
+        }
+      ]
+    },
+    {
+      "title": "Datos del motor",
+      "rows": [
+        {
+          "label": "Tipo de motor",
+          "value": "Eléctrico solar"
+        },
+        {
+          "label": "Caja de control",
+          "value": "Sí"
+        },
+        {
+          "label": "Potencia",
+          "value": "0,5 HP"
+        },
+        {
+          "label": "Voltaje",
+          "value": "72 V DC"
+        }
+      ]
+    },
+    {
+      "title": "Panel solar: especificaciones técnicas",
+      "rows": [
+        {
+          "label": "Modelo",
+          "value": "LNE5N144D-590"
+        },
+        {
+          "label": "Marca",
+          "value": "Zenit"
+        },
+        {
+          "label": "Potencia máxima (Pmax)",
+          "value": "590 W"
+        },
+        {
+          "label": "Voltaje a potencia máxima (Vmp)",
+          "value": "43,58 V"
+        },
+        {
+          "label": "Corriente a potencia máxima (Imp)",
+          "value": "13,54 A"
+        },
+        {
+          "label": "Voltaje de circuito abierto (Voc)",
+          "value": "51,98 V"
+        },
+        {
+          "label": "Corriente de cortocircuito (Isc)",
+          "value": "14,40 A"
+        },
+        {
+          "label": "Voltaje máximo del sistema",
+          "value": "1500 V"
+        },
+        {
+          "label": "Capacidad máxima del fusible",
+          "value": "30 A"
+        },
+        {
+          "label": "Temperatura nominal de la celda",
+          "value": "44 ± 2 °C"
+        },
+        {
+          "label": "Cantidad de paneles solares",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "title": "Panel solar: especificaciones físicas",
+      "rows": [
+        {
+          "label": "Celda solar",
+          "value": "Policristalina"
+        },
+        {
+          "label": "Distribución de celdas",
+          "value": "144 (6 × 24)"
+        },
+        {
+          "label": "Vidrio",
+          "value": "Cristal"
+        },
+        {
+          "label": "Material del marco",
+          "value": "Aluminio anodizado"
+        },
+        {
+          "label": "Color del marco",
+          "value": "Aluminio"
+        },
+        {
+          "label": "Dimensiones",
+          "value": "2280 × 1135 × 30 mm"
+        },
+        {
+          "label": "Peso",
+          "value": "32 kg"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/bomba-sumergible-solar-cobre-1-2hp.png",
+      "alt": "Bomba sumergible solar Zenit ZBS-001S de 1/2 HP"
+    }
+  ],
+  "files": [
+    {
+      "kind": "curve",
+      "src": "/products/bomba-sumergible-solar-cobre-1-2hp-curva.png",
+      "label": "Curva de rendimiento: altura (m) según caudal (L/min)"
+    },
+    {
+      "kind": "wiring",
+      "src": "/products/bomba-sumergible-solar-cobre-1-2hp-conexion.png",
+      "label": "Conexión recomendada de los paneles solares y la caja de control"
+    }
+  ],
+  "status": "published"
+}

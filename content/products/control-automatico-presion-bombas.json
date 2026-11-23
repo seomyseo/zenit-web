@@ -1,0 +1,62 @@
+{
+  "erpCode": "0021-0330",
+  "slug": "control-automatico-presion-bombas",
+  "name": "Control automático de presión para bombas, 110/120 V",
+  "group": "agricola",
+  "family": "control",
+  "shortDescription": "Control automático (press control) para bombas de agua: enciende y apaga la bomba según la presión. Para agua limpia.",
+  "features": [
+    "Grado de protección IP65.",
+    "Para agua limpia."
+  ],
+  "specGroups": [
+    {
+      "title": "Especificaciones",
+      "rows": [
+        {
+          "label": "Voltaje",
+          "value": "110/120 V"
+        },
+        {
+          "label": "Frecuencia",
+          "value": "60 Hz"
+        },
+        {
+          "label": "Corriente máxima",
+          "value": "10 A"
+        },
+        {
+          "label": "Potencia máxima",
+          "value": "1,1 kW"
+        },
+        {
+          "label": "Presión de arranque",
+          "value": "1,5 bar"
+        },
+        {
+          "label": "Presión máxima",
+          "value": "10 bar"
+        },
+        {
+          "label": "Conexión",
+          "value": "G 1\""
+        },
+        {
+          "label": "Temperatura máxima",
+          "value": "60 °C"
+        },
+        {
+          "label": "Grado de protección",
+          "value": "IP65"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/control-automatico-presion-bombas.png",
+      "alt": "Control automático de presión Zenit para bombas de agua"
+    }
+  ],
+  "status": "published"
+}

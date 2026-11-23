@@ -1,0 +1,51 @@
+{
+  "erpCode": "0021-0331",
+  "slug": "presostato-hidroneumatico-macho",
+  "name": "Presostato hidroneumático 20-40 PSI, conexión macho",
+  "group": "agricola",
+  "family": "presostato",
+  "variantOf": "0021-0332",
+  "shortDescription": "Presostato para sistemas hidroneumáticos, con ajuste de fábrica de 20-40 PSI y conexión macho.",
+  "features": [
+    "Conexión macho.",
+    "Palanca de apertura para apagado automático."
+  ],
+  "specGroups": [
+    {
+      "title": "Especificaciones",
+      "rows": [
+        {
+          "label": "Rango de presión (ajuste de fábrica)",
+          "value": "20-40 PSI (1,4-2,8 bar)"
+        },
+        {
+          "label": "Campo de regulación al aumentar la presión",
+          "value": "1,4-4,6 bar"
+        },
+        {
+          "label": "Diferencial, valor mínimo",
+          "value": "1,0-2,1 bar"
+        },
+        {
+          "label": "Diferencial, valor máximo",
+          "value": "1,2-2,3 bar"
+        },
+        {
+          "label": "Rosca de presión",
+          "value": "1/4\" gas"
+        },
+        {
+          "label": "Conexión",
+          "value": "Macho"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/presostato-hidroneumatico-macho.png",
+      "alt": "Presostato hidroneumático Zenit, conexión macho, carcasa gris"
+    }
+  ],
+  "status": "published"
+}

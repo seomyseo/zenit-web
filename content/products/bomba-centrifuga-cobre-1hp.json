@@ -1,0 +1,66 @@
+{
+  "erpCode": "0021-0314",
+  "slug": "bomba-centrifuga-cobre-1hp",
+  "model": "ZBC-002C",
+  "name": "Bomba centrífuga de cobre 1 HP, 110-220 V",
+  "group": "agricola",
+  "family": "centrifuga",
+  "variantOf": "0021-0318",
+  "shortDescription": "Bomba centrífuga eléctrica de 1 HP con motor de bobinas de cobre, para agua limpia. Funciona a 110/220 V.",
+  "features": [
+    "Motor con bobinas de cobre.",
+    "Para agua limpia."
+  ],
+  "applications": [
+    "Aplicaciones domésticas, jardinería y llenado de depósitos.",
+    "Suministro de agua a tanques o cisternas."
+  ],
+  "warranty": "1 año, directa por el distribuidor",
+  "specGroups": [
+    {
+      "title": "Especificaciones",
+      "rows": [
+        {
+          "label": "Potencia",
+          "value": "1 HP (750 W)"
+        },
+        {
+          "label": "Voltaje",
+          "value": "110/220 V"
+        },
+        {
+          "label": "Frecuencia",
+          "value": "60 Hz"
+        },
+        {
+          "label": "Bobinado del motor",
+          "value": "Cobre"
+        },
+        {
+          "label": "Fluido",
+          "value": "Agua limpia, sin partículas abrasivas"
+        }
+      ]
+    },
+    {
+      "title": "Instalación",
+      "rows": [
+        {
+          "label": "Lugar",
+          "value": "Cubierto, protegido de la intemperie"
+        },
+        {
+          "label": "Temperatura ambiente máxima",
+          "value": "40 °C"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/bomba-centrifuga-cobre-1hp.png",
+      "alt": "Bomba centrífuga eléctrica Zenit de 1 HP, color verde"
+    }
+  ],
+  "status": "published"
+}

@@ -1,0 +1,62 @@
+{
+  "erpCode": "2352-0124",
+  "slug": "refrigerante-rojo-galon",
+  "name": "Refrigerante rojo listo para usar, galón",
+  "group": "automotriz",
+  "family": "refrigerante",
+  "shortDescription": "Refrigerante para vehículos listo para usar: no agregar agua. Preparado a la dilución correcta para proteger el sistema de enfriamiento de automóviles y camionetas.",
+  "features": [
+    "No corroe.",
+    "No genera sólidos.",
+    "No necesita aditivos.",
+    "Listo para usar: no agregar agua.",
+    "Protege contra la oxidación y la corrosión."
+  ],
+  "applications": [
+    "Sistema de enfriamiento de automóviles y camionetas.",
+    "Vehículos a gasolina, diésel, híbridos y eléctricos."
+  ],
+  "specGroups": [
+    {
+      "title": "Envase y embalaje",
+      "rows": [
+        {
+          "label": "Presentación",
+          "value": "1 caja con 4 galones de 3.785 ml cada uno"
+        },
+        {
+          "label": "Almacenaje",
+          "value": "Lugar seco y fresco, a una temperatura entre 5 y 30 °C"
+        },
+        {
+          "label": "Caducidad",
+          "value": "24 meses en el envase original sellado"
+        }
+      ]
+    },
+    {
+      "title": "Especificaciones",
+      "rows": [
+        {
+          "label": "Color",
+          "value": "Rojo"
+        },
+        {
+          "label": "pH",
+          "value": "8,81"
+        },
+        {
+          "label": "Composición",
+          "value": "Monoetilenglicol, ácido etilendiaminotetraacético (EDTA), agua desmineralizada, anticorrosivo y pigmento"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/refrigerante-rojo-galon.png",
+      "alt": "Galón de refrigerante rojo para vehículos Zenit"
+    }
+  ],
+  "status": "published"
+}

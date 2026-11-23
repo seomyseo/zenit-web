@@ -1,0 +1,173 @@
+{
+  "erpCode": "0021-0316",
+  "slug": "bomba-periferica-solar-cobre-1-2hp",
+  "model": "ZBP-001S",
+  "name": "Bomba periférica solar de cobre 1/2 HP con 1 panel",
+  "group": "agricola",
+  "family": "periferica",
+  "shortDescription": "Kit de bombeo solar: bomba periférica de 1/2 HP con motor eléctrico solar de 48 V DC e impulsor cerrado, con 1 panel solar de 590 W.",
+  "features": [
+    "Electrobomba periférica con impulsor cerrado.",
+    "Diámetro de succión y descarga de 1\".",
+    "Arranque suave: alarga la vida del motor y disminuye el consumo eléctrico.",
+    "Equipada con motor eléctrico solar de 1/2 HP."
+  ],
+  "applications": [
+    "Uso agrícola: por su autonomía, ideal para sitios remotos sin acceso a la electricidad.",
+    "Sistemas de riego para cultivos y pastizales.",
+    "Abastecimiento de agua para animales."
+  ],
+  "includes": [
+    "1 panel solar de 590 W"
+  ],
+  "warranty": "1 año, directa por el distribuidor",
+  "specGroups": [
+    {
+      "title": "Datos de la bomba",
+      "rows": [
+        {
+          "label": "Tipo de bomba",
+          "value": "Periférica superficial solar"
+        },
+        {
+          "label": "Tipo de impulsor",
+          "value": "Cerrado"
+        },
+        {
+          "label": "Cantidad de impulsores",
+          "value": "1"
+        },
+        {
+          "label": "Diámetro de succión",
+          "value": "1\""
+        },
+        {
+          "label": "Diámetro de descarga",
+          "value": "1\""
+        },
+        {
+          "label": "Altura máxima (H. máx.)",
+          "value": "35 m"
+        },
+        {
+          "label": "Caudal máximo (Q. máx.)",
+          "value": "32 L/min"
+        },
+        {
+          "label": "Uso",
+          "value": "Agrícola / hogar"
+        }
+      ]
+    },
+    {
+      "title": "Datos del motor",
+      "rows": [
+        {
+          "label": "Tipo de motor",
+          "value": "Eléctrico solar"
+        },
+        {
+          "label": "Caja de control",
+          "value": "No"
+        },
+        {
+          "label": "Potencia",
+          "value": "1/2 HP"
+        },
+        {
+          "label": "Voltaje",
+          "value": "48 V DC"
+        }
+      ]
+    },
+    {
+      "title": "Panel solar: especificaciones técnicas",
+      "rows": [
+        {
+          "label": "Modelo",
+          "value": "LNE5N144D-590"
+        },
+        {
+          "label": "Marca",
+          "value": "Zenit"
+        },
+        {
+          "label": "Potencia máxima (Pmax)",
+          "value": "590 W"
+        },
+        {
+          "label": "Voltaje a potencia máxima (Vmp)",
+          "value": "43,58 V"
+        },
+        {
+          "label": "Corriente a potencia máxima (Imp)",
+          "value": "13,54 A"
+        },
+        {
+          "label": "Voltaje de circuito abierto (Voc)",
+          "value": "51,98 V"
+        },
+        {
+          "label": "Corriente de cortocircuito (Isc)",
+          "value": "14,40 A"
+        },
+        {
+          "label": "Voltaje máximo del sistema",
+          "value": "1500 V"
+        },
+        {
+          "label": "Capacidad máxima del fusible",
+          "value": "30 A"
+        },
+        {
+          "label": "Temperatura nominal de la celda",
+          "value": "44 ± 2 °C"
+        },
+        {
+          "label": "Cantidad de paneles solares",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "title": "Panel solar: especificaciones físicas",
+      "rows": [
+        {
+          "label": "Celda solar",
+          "value": "Policristalina"
+        },
+        {
+          "label": "Distribución de celdas",
+          "value": "144 (6 × 24)"
+        },
+        {
+          "label": "Vidrio",
+          "value": "Cristal"
+        },
+        {
+          "label": "Material del marco",
+          "value": "Aluminio anodizado"
+        },
+        {
+          "label": "Color del marco",
+          "value": "Aluminio"
+        },
+        {
+          "label": "Dimensiones",
+          "value": "2280 × 1135 × 30 mm"
+        },
+        {
+          "label": "Peso",
+          "value": "32 kg"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/bomba-periferica-solar-cobre-1-2hp.png",
+      "alt": "Bomba periférica solar Zenit ZBP-001S de 1/2 HP"
+    }
+  ],
+  "status": "published"
+}

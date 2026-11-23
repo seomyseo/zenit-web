@@ -1,0 +1,50 @@
+{
+  "erpCode": "0021-0332",
+  "slug": "presostato-hidroneumatico-hembra",
+  "name": "Presostato hidroneumático 20-40 PSI, conexión hembra",
+  "group": "agricola",
+  "family": "presostato",
+  "shortDescription": "Presostato para sistemas hidroneumáticos, con ajuste de fábrica de 20-40 PSI y conexión hembra.",
+  "features": [
+    "Conexión hembra.",
+    "Palanca de apertura para apagado automático."
+  ],
+  "specGroups": [
+    {
+      "title": "Especificaciones",
+      "rows": [
+        {
+          "label": "Rango de presión (ajuste de fábrica)",
+          "value": "20-40 PSI (1,4-2,8 bar)"
+        },
+        {
+          "label": "Campo de regulación al aumentar la presión",
+          "value": "1,4-4,6 bar"
+        },
+        {
+          "label": "Diferencial, valor mínimo",
+          "value": "1,0-2,1 bar"
+        },
+        {
+          "label": "Diferencial, valor máximo",
+          "value": "1,2-2,3 bar"
+        },
+        {
+          "label": "Rosca de presión",
+          "value": "1/4\" gas"
+        },
+        {
+          "label": "Conexión",
+          "value": "Hembra"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "src": "/products/presostato-hidroneumatico-hembra.png",
+      "alt": "Presostato hidroneumático Zenit, conexión hembra, carcasa gris"
+    }
+  ],
+  "status": "published"
+}

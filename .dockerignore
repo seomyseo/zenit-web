@@ -1,0 +1,21 @@
+# Fuentes originales (PDF, PNG sin procesar, logos): no entran a la imagen.
+# Solo se sirven las imágenes procesadas de public/products/ y public/brand/.
+content/source/
+logos-zenit/
+
+.git
+.gitignore
+.env*
+!.env.example
+.mcp.json
+.claude/
+node_modules
+.next
+out
+tests
+test-results
+playwright-report
+blob-report
+*.md
+Dockerfile
+docker-compose.yml

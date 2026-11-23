@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+/* Tokens de marca Zenit (CLAUDE.md). Las variables de shadcn/ui se mapean en el paso 3. */
+@theme {
+  --color-zenit-green: #02682e;
+  --color-zenit-black: #000000;
+  --color-zenit-gray: #575756;
+  --color-zenit-white: #ffffff;
+}
+
+body {
+  background: var(--color-zenit-white);
+  color: var(--color-zenit-black);
+}
