@@ -51,3 +51,6 @@ next-env.d.ts
 # Solo se versiona el manual de marca. Las imágenes publicables están en public/products/.
 /content/source/*
 !/content/source/brand/
+
+# capturas de revisión de diseño
+/.screenshots/

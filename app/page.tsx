@@ -1,14 +1,22 @@
-import { getPublishedProducts } from "@/lib/products";
+import { Catalog } from "@/components/home/catalog";
+import { Hero } from "@/components/home/hero";
+import { SiteHeader } from "@/components/site/header";
+import { site } from "@/content/site";
+import { getProductsByGroup, getPublishedProducts } from "@/lib/products";
 
-// Página provisional: la home real se construye en el paso 4 del brief.
 export default function Home() {
   const products = getPublishedProducts();
+  const featured =
+    products.find((product) => product.erpCode === site.hero.featuredErpCode) ?? products[0];
+  if (!featured) throw new Error("No hay productos publicados");
+
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-16">
-      <h1 className="text-2xl font-bold">Zenit</h1>
-      <p className="mt-2 text-zenit-gray">
-        Sitio en construcción. Productos cargados: {products.length}.
-      </p>
-    </main>
+    <>
+      <SiteHeader />
+      <main id="contenido" className="flex-1">
+        <Hero featured={featured} />
+        <Catalog groups={getProductsByGroup()} />
+      </main>
+    </>
   );
 }

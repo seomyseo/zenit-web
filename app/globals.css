@@ -1,14 +1,116 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-/* Tokens de marca Zenit (CLAUDE.md). Las variables de shadcn/ui se mapean en el paso 3. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Marca Zenit (CLAUDE.md). Solo 4 colores; los tonos suaves (bordes, fondos
+ * de tarjeta, hover) se derivan del verde o del gris con color-mix.
+ */
 @theme {
   --color-zenit-green: #02682e;
   --color-zenit-black: #000000;
   --color-zenit-gray: #575756;
   --color-zenit-white: #ffffff;
+
+  /* Derivados */
+  --color-zenit-green-dark: color-mix(in oklab, #02682e 82%, #000000);
+  --color-zenit-gray-50: color-mix(in oklab, #575756 6%, #ffffff);
+  --color-zenit-gray-100: color-mix(in oklab, #575756 12%, #ffffff);
+  --color-zenit-gray-200: color-mix(in oklab, #575756 24%, #ffffff);
 }
 
-body {
-  background: var(--color-zenit-white);
-  color: var(--color-zenit-black);
+@theme inline {
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-roboto-slab), ui-serif, Georgia, serif;
+  --font-display: var(--font-roboto-slab), ui-serif, Georgia, serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Variables de shadcn/ui mapeadas a la marca. */
+:root {
+  --background: var(--color-zenit-white);
+  --foreground: var(--color-zenit-black);
+  --card: var(--color-zenit-white);
+  --card-foreground: var(--color-zenit-black);
+  --popover: var(--color-zenit-white);
+  --popover-foreground: var(--color-zenit-black);
+  --primary: var(--color-zenit-green);
+  --primary-foreground: var(--color-zenit-white);
+  --secondary: var(--color-zenit-black);
+  --secondary-foreground: var(--color-zenit-white);
+  --muted: var(--color-zenit-gray-50);
+  --muted-foreground: var(--color-zenit-gray);
+  --accent: var(--color-zenit-gray-100);
+  --accent-foreground: var(--color-zenit-black);
+  --destructive: var(--color-zenit-black);
+  --border: var(--color-zenit-gray-200);
+  --input: var(--color-zenit-gray-200);
+  --ring: var(--color-zenit-green);
+  --radius: 0.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-zenit-green);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@layer components {
+  /* Lema oficial: Montserrat ExtraBold Italic en mayúsculas (manual, pág. 6). */
+  .tagline {
+    font-family: var(--font-montserrat), sans-serif;
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
 }

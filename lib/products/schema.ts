@@ -69,5 +69,15 @@ export const GROUP_LABELS: Record<ProductGroup, string> = {
   automotriz: "Automotriz",
 };
 
+/** Orden de las familias dentro de cada grupo del catálogo. */
+export const FAMILY_ORDER: readonly ProductFamily[] = [
+  "centrifuga",
+  "periferica",
+  "sumergible",
+  "presostato",
+  "control",
+  "refrigerante",
+];
+
 /** Orden de los grupos en el catálogo (mismo orden del ERP). */
 export const GROUP_ORDER: readonly ProductGroup[] = ["agricola", "automotriz"];

@@ -1,6 +1,6 @@
 import "server-only";
 import { loadAllProducts } from "./load";
-import { GROUP_ORDER, type Product, type ProductGroup } from "./schema";
+import { FAMILY_ORDER, GROUP_ORDER, type Product, type ProductGroup } from "./schema";
 
 export * from "./schema";
 
@@ -11,13 +11,18 @@ function allProducts(): Product[] {
   return cache;
 }
 
-/** Productos visibles en la web, en el orden de los grupos del ERP y por código. */
+/**
+ * Productos visibles en la web, ordenados por grupo (orden del ERP), familia y,
+ * dentro de cada familia, el producto base antes que sus variantes.
+ */
 export function getPublishedProducts(): Product[] {
   return allProducts()
     .filter((product) => product.status === "published")
     .sort(
       (a, b) =>
         GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group) ||
+        FAMILY_ORDER.indexOf(a.family) - FAMILY_ORDER.indexOf(b.family) ||
+        Number(Boolean(a.variantOf)) - Number(Boolean(b.variantOf)) ||
         a.erpCode.localeCompare(b.erpCode),
     );
 }
