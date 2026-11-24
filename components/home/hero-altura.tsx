@@ -6,12 +6,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { WingMotif } from "@/components/brand/wing-motif";
 import { Button } from "@/components/ui/button";
-import type { HeroSlide } from "@/lib/lab/hero-data";
-import { CountUp } from "./count-up";
+import type { HeroSlide } from "@/lib/hero-data";
+import { CountUp } from "@/components/motion/count-up";
 
 const SLIDE_MS = 6000;
 
 type Props = {
+  /** id de la sección ("inicio" en la home, destino del menú). */
+  id?: string;
   eyebrow: string;
   title: string;
   lead: string;
@@ -25,7 +27,7 @@ type Props = {
  * Variante A, "Altura": escenario negro a pantalla completa, lema gigante de fondo,
  * tres productos que rotan con un corte diagonal verde y cifras que suben.
  */
-export function HeroAltura({ eyebrow, title, lead, tagline, primaryCta, secondaryCta, slides }: Props) {
+export function HeroAltura({ id, eyebrow, title, lead, tagline, primaryCta, secondaryCta, slides }: Props) {
   const reduce = useReducedMotion();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -45,6 +47,7 @@ export function HeroAltura({ eyebrow, title, lead, tagline, primaryCta, secondar
   return (
     <section
       ref={sectionRef}
+      id={id}
       aria-labelledby="altura-title"
       aria-roledescription="carrusel"
       className="relative isolate overflow-hidden bg-zenit-black text-zenit-white"
@@ -73,15 +76,14 @@ export function HeroAltura({ eyebrow, title, lead, tagline, primaryCta, secondar
             <WingMotif height={12} />
             {eyebrow}
           </motion.p>
-          <motion.h1
+          {/* Sin animación de entrada: es el elemento más grande (LCP) y debe pintarse de inmediato. */}
+          <h1
             id="altura-title"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
             className="mt-5 font-display text-[2.4rem] leading-[1.02] sm:text-6xl lg:text-[4.4rem]"
           >
             {title}
-          </motion.h1>
+          </h1>
+          <p className="tagline mt-5 text-xl text-zenit-white sm:text-2xl">{tagline}</p>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}

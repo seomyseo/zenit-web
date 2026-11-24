@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { WingMotif } from "@/components/brand/wing-motif";
 import { Button } from "@/components/ui/button";
-import type { HeroSlide } from "@/lib/lab/hero-data";
+import type { HeroSlide } from "@/lib/hero-data";
 
 type Props = {
   eyebrow: string;

@@ -43,11 +43,6 @@ export const site = {
     secondaryCta: { label: "Quiero distribuir Zenit", href: "/#contacto" },
     /** erpCode del producto estrella cuya foto va en el hero. */
     featuredErpCode: "0021-0318",
-    highlights: [
-      "Línea agrícola y automotriz",
-      "Más de 80 vendedores en todo el país",
-      "Garantía de 1 año en bombas",
-    ],
   },
 
   why: {
@@ -121,6 +116,18 @@ export const site = {
     ],
     coverage: "Cobertura nacional a través de la red de distribución de Inversiones Lefre.",
     ownerCta: "Conoce Inversiones Lefre",
+  },
+
+  /** Banner antes del formulario: concepto "El sol mueve el agua". */
+  solarBanner: {
+    eyebrow: "Bombeo solar",
+    title: "Agua con la energía del sol",
+    lead: "Bombas solares Zenit para el campo y el hogar, y toda una línea de bombas y refrigerantes con respaldo nacional.",
+    primaryCta: { label: "Ver bombas solares", href: "/#productos" },
+    secondaryCta: { label: "Soy ferretero", href: "/#contacto" },
+    kitsLabel: "Kits solares",
+    /** erpCode del kit cuya foto va en el banner. */
+    featuredErpCode: "0021-0318",
   },
 
   leadForm: {

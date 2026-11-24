@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { HeroAltura } from "@/components/lab/hero-altura";
+import { HeroAltura } from "@/components/home/hero-altura";
 import { HeroDiagonal } from "@/components/lab/hero-diagonal";
 import { HeroVitrina } from "@/components/lab/hero-vitrina";
 import { site } from "@/content/site";
-import { getHeroSlides, getModelCodes, getShelfProducts } from "@/lib/lab/hero-data";
+import { getHeroSlides, getModelCodes, getShelfProducts } from "@/lib/hero-data";
 
 /** Laboratorio: 3 variantes de hero para que el cliente compare. No se indexa. */
 export const metadata: Metadata = {

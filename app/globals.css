@@ -121,3 +121,10 @@
     transform: translateX(-50%);
   }
 }
+
+/* Agua que fluye en el banner solar. */
+@keyframes zenit-water {
+  to {
+    stroke-dashoffset: -16;
+  }
+}

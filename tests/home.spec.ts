@@ -14,7 +14,8 @@ test.describe("home", () => {
   test("tiene un solo h1 y el lema oficial", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.getByText("Tecnología de altura", { exact: true })).toBeVisible();
+    // Lema legible (el gigante de fondo es decorativo y aria-hidden).
+    await expect(page.locator("#inicio .tagline:not([aria-hidden])")).toHaveText("Tecnología de altura");
     await expect(page.getByText(/impulsando el mañana/i)).toHaveCount(0);
   });
 

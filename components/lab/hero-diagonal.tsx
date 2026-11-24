@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { WingMotif } from "@/components/brand/wing-motif";
 import { Button } from "@/components/ui/button";
-import type { HeroSlide } from "@/lib/lab/hero-data";
-import { CountUp } from "./count-up";
+import type { HeroSlide } from "@/lib/hero-data";
+import { CountUp } from "@/components/motion/count-up";
 
 type Props = {
   eyebrow: string;

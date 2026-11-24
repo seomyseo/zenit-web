@@ -4,7 +4,8 @@ El pulido visual y las animaciones los decide el cliente más adelante. Hasta en
 
 ## Home
 
-- **Hero:** la foto del kit solar (ZBC-002S) domina la composición. La bomba debería verse sola, o junto a un galón de refrigerante para mostrar las dos líneas (agrícola y automotriz).
+- ~~**Hero:** la foto del kit solar domina la composición~~. **Resuelto** con el hero A "Altura" (rotan bomba eléctrica sola, kit solar y refrigerante). Las variantes B y C siguen en `/lab/hero` como referencia.
+- **Banner solar** ("Agua con la energía del sol"): la escena de cielo y campo es una ilustración con tonos derivados del verde. Si el cliente consigue una foto real de la bomba solar instalada en campo, reemplaza a la ilustración.
 
 ## Tarjetas de producto
 
@@ -16,4 +17,4 @@ El pulido visual y las animaciones los decide el cliente más adelante. Hasta en
 
 ## Movimiento
 
-- **Dirección de movimiento: por definir.** Hero, entrada de las tarjetas del catálogo y el lema TECNOLOGÍA DE ALTURA. Hoy solo hay una entrada sutil (opacidad) de las tarjetas, que respeta `prefers-reduced-motion`.
+- **Dirección definida: concepto "Altura"** (ver `CLAUDE.md`). Aplicado en el hero y el banner solar. Pendiente: llevarla a la entrada de las tarjetas del catálogo y al resto de secciones, que hoy solo tienen una entrada sutil.

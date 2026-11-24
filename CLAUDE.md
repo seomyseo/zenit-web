@@ -68,7 +68,8 @@ Industrial, técnica y sobria: fondos blancos y negros con el verde como acento,
 
 ## Diseño y animación
 - Mobile first: se verá sobre todo en el teléfono. Probar a 360 px.
-- Animación con Motion: sutil y con propósito (entradas de sección, hover). Respetar `prefers-reduced-motion`. No agregar GSAP ni Lenis sin una razón concreta.
+- Animación con Motion, con propósito. Dirección aprobada por el cliente: concepto **"Altura"** (hero A: rotación de productos, corte diagonal verde, cifras que suben, lema con paralaje) y banner solar (sol que sube con el scroll y línea de agua). Fuera de esas piezas, movimiento sutil (entradas de sección, hover).
+- Siempre: respetar `prefers-reduced-motion` (sin rotación automática, sin paralaje, valores finales a la vista); no animar la entrada del H1 ni de la imagen principal (LCP); no agregar GSAP ni Lenis sin una razón concreta.
 - Componentes: partir de shadcn/ui; 21st.dev y el MCP de shadcn para generar piezas; ajustar siempre a los tokens de arriba.
 - Imágenes con `next/image`, `alt` descriptivo y tamaños explícitos. Las imágenes de producto son las de `content/source/`.
 - Accesibilidad: foco visible, navegación por teclado, jerarquía de encabezados correcta, contraste según la tabla de arriba.
