@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { LeadField } from "./messages";
+import { LEAD_MESSAGE_MAX, type LeadField } from "./messages";
 
 export { LEAD_FIELD_MESSAGES, type LeadField, type LeadResponse } from "./messages";
 
@@ -21,6 +21,9 @@ export const leadInputSchema = z.object({
     .regex(/^\+?[\d\s().-]+$/)
     .refine((value) => value.replace(/\D/g, "").length >= 7 && value.replace(/\D/g, "").length <= 15),
   email: z.string().trim().toLowerCase().max(160).pipe(z.email()),
+  /** Mensaje libre, opcional. */
+  message: z.string().trim().max(LEAD_MESSAGE_MAX).default(""),
+  /** erpCode del producto desde cuya ficha se llegó (el formulario ya no tiene selector). */
   product_interest: z.array(z.string().regex(/^\d{4}-\d{4}$/)).max(20).default([]),
   consent: z.literal(true),
   /** Honeypot: los humanos no lo ven; si llega con contenido, es un bot. */
@@ -38,6 +41,7 @@ export type Lead = {
   city: string;
   phone: string;
   email: string;
+  message: string;
   product_interest: string[];
   consent: boolean;
 };

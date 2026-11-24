@@ -129,8 +129,8 @@ Sin precios en ningún lugar.
 
 ## 7. Captación de leads
 
-- **Campos:** nombre, empresa, ciudad, teléfono, email, productos de interés (selector múltiple con los 11) y una línea de consentimiento ("Al enviar, aceptas que Inversiones Lefre te contacte").
-- **Formato del lead** (sin base de datos por ahora): `created_at`, `origin` (valor `zenit.com.ve`), `name`, `company`, `city`, `phone`, `email`, `product_interest` (lista de `erpCode`), `consent` (bool). Son los mismos campos que tendrá la tabla compartida con lefre.com.ve.
+- **Campos:** nombre, empresa, ciudad, teléfono, email, mensaje (opcional, máx. 1000 caracteres) y consentimiento ("Al enviar, aceptas que Inversiones Lefre te contacte"). *Cambio del cliente:* se quitó el selector de productos de interés. Si se llega desde una ficha (`/?producto=<erpCode>#contacto`), el mensaje se precarga con "Me interesa: <producto>." y el código viaja en `product_interest`.
+- **Formato del lead** (sin base de datos por ahora): `created_at`, `origin` (valor `zenit.com.ve`), `name`, `company`, `city`, `phone`, `email`, `message` (texto, puede ir vacío), `product_interest` (lista de `erpCode`; vacía salvo que se llegue desde una ficha), `consent` (bool). Son los mismos campos que tendrá la tabla compartida con lefre.com.ve.
 - **`POST /api/leads`:** validación con Zod en servidor, honeypot, límite de intentos por IP, respuesta clara de éxito o error. No guarda nada en el servidor.
 - **Envío:** POST a `LEADS_WEBHOOK_URL` (será un flujo de n8n que decide dónde guardarlo). Si el webhook no está configurado o falla, responder con error claro y mostrar el botón de WhatsApp como alternativa; nunca perder el lead en silencio. En desarrollo sin webhook, aceptar el envío y avisar por consola sin imprimir datos personales.
 - **WhatsApp:** botón si existe `NEXT_PUBLIC_WHATSAPP_URL` (el número está pendiente).

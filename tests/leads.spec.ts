@@ -9,6 +9,7 @@ type ReceivedLead = {
   city: string;
   phone: string;
   email: string;
+  message: string;
   product_interest: string[];
   consent: boolean;
   _auth: string | null;
@@ -29,18 +30,26 @@ const validLead = (name: string) => ({
 });
 
 test.describe("formulario de captación", () => {
-  test("envía el lead al webhook con el producto preseleccionado", async ({ page, request }, info) => {
+  test("no muestra la lista de productos de interés", async ({ page }) => {
+    await page.goto("/#contacto");
+    const form = page.locator("#contacto form");
+    await expect(form.getByRole("checkbox")).toHaveCount(1); // solo el consentimiento
+    await expect(form.getByLabel("Mensaje")).toBeVisible();
+  });
+
+  test("desde una ficha, precarga el mensaje y envía el producto al webhook", async ({ page, request }, info) => {
     const name = `Prueba ${info.project.name} ${Date.now()}`;
     await page.goto("/?producto=0021-0320#contacto");
     const form = page.locator("#contacto form");
-    await expect(form.getByLabel("Bomba sumergible solar de cobre 1/2 HP con 2 paneles")).toBeChecked();
+    const message = form.getByLabel("Mensaje");
+    await expect(message).toHaveValue("Me interesa: Bomba sumergible solar de cobre 1/2 HP con 2 paneles.");
 
     await form.getByLabel("Nombre y apellido").fill(name);
     await form.getByLabel("Empresa o ferretería").fill("Ferretería La Prueba");
     await form.getByLabel("Ciudad").fill("Maracaibo");
     await form.getByLabel("Teléfono").fill("0261 555 1234");
     await form.getByLabel("Correo electrónico").fill("ventas@ejemplo.com");
-    await form.getByLabel("Presostato hidroneumático 20-40 PSI, conexión macho").check();
+    await message.fill("Me interesa la sumergible solar. ¿Tienen en existencia?");
     await form.getByLabel(/aceptas que Inversiones Lefre te contacte/).check();
     await form.getByRole("button", { name: "Enviar solicitud" }).click();
 
@@ -56,7 +65,8 @@ test.describe("formulario de captación", () => {
       consent: true,
       _auth: "Bearer token-de-prueba-123456",
     });
-    expect(lead!.product_interest.sort()).toEqual(["0021-0320", "0021-0331"]);
+    expect(lead!.product_interest).toEqual(["0021-0320"]);
+    expect(lead!.message).toBe("Me interesa la sumergible solar. ¿Tienen en existencia?");
     expect(Number.isNaN(Date.parse(lead!.created_at))).toBe(false);
   });
 
@@ -103,6 +113,14 @@ test.describe("POST /api/leads", () => {
     });
     expect(response.status()).toBe(422);
     expect((await response.json()).fields).toHaveProperty("product_interest");
+  });
+
+  test("rechaza un mensaje de más de 1000 caracteres", async ({ request }) => {
+    const response = await request.post("/api/leads", {
+      data: { ...validLead("Mensaje Largo"), message: "x".repeat(1001) },
+    });
+    expect(response.status()).toBe(422);
+    expect(Object.keys((await response.json()).fields)).toEqual(["message"]);
   });
 
   test("el honeypot responde ok pero no envía nada", async ({ request }) => {

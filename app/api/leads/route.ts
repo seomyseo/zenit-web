@@ -83,6 +83,7 @@ export async function POST(request: Request) {
     city: input.city,
     phone: input.phone,
     email: input.email,
+    message: input.message,
     product_interest: [...new Set(input.product_interest)],
     consent: input.consent,
   };

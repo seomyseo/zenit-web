@@ -139,7 +139,8 @@ export function SolarBanner({ eyebrow, title, lead, primaryCta, secondaryCta, ki
                   />
                 ))}
               </motion.g>
-              <circle cx={SUN.x} cy={SUN.y} r={SUN.r} fill="#ffffff" stroke="#02682e" strokeWidth={8} />
+              {/* Relleno amarillo pedido por el cliente (fuera de la paleta de marca, solo aquí). */}
+              <circle cx={SUN.x} cy={SUN.y} r={SUN.r} fill="#f6c21a" stroke="#02682e" strokeWidth={8} />
             </motion.g>
             <motion.path
               d={WATER_PATH}

@@ -5,7 +5,7 @@ import { FormDots } from "@/components/ui/form-dots";
 import { GlobeWireframe } from "@/components/ui/globe-wireframe";
 import { site } from "@/content/site";
 import { publicEnv } from "@/lib/env";
-import { GROUP_LABELS, getPublishedProducts } from "@/lib/products";
+import { getPublishedProducts } from "@/lib/products";
 
 type ContactLink = { icon: LucideIcon; label: string; href: string };
 
@@ -16,11 +16,8 @@ type ContactLink = { icon: LucideIcon; label: string; href: string };
  */
 export function LeadSection() {
   const { leadForm, instagram, owner, header } = site;
-  const products = getPublishedProducts().map((p) => ({
-    erpCode: p.erpCode,
-    name: p.name,
-    groupLabel: GROUP_LABELS[p.group],
-  }));
+  // Solo para precargar el mensaje cuando se llega desde una ficha.
+  const products = getPublishedProducts().map((p) => ({ erpCode: p.erpCode, name: p.name }));
 
   // Solo canales reales: teléfono y correo siguen pendientes del cliente (no se inventan).
   const links: ContactLink[] = [

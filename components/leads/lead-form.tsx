@@ -5,10 +5,16 @@ import { useEffect, useId, useRef, useState } from "react";
 import { WhatsAppLink } from "@/components/site/whatsapp-link";
 import { Button } from "@/components/ui/button";
 import { site } from "@/content/site";
-import { LEAD_FIELD_MESSAGES, type LeadField, type LeadResponse } from "@/lib/leads/messages";
+import {
+  LEAD_FIELD_MESSAGES,
+  LEAD_MESSAGE_MAX,
+  type LeadField,
+  type LeadResponse,
+} from "@/lib/leads/messages";
 import { cn } from "@/lib/utils";
 
-export type LeadProductOption = { erpCode: string; name: string; groupLabel: string };
+/** Productos que se pueden preseleccionar desde una ficha (?producto=<erpCode>). */
+export type LeadProductOption = { erpCode: string; name: string };
 
 type Status = "idle" | "sending" | "success" | "error";
 type FieldErrors = Partial<Record<LeadField, string>>;
@@ -28,6 +34,7 @@ function validate(data: FormData): FieldErrors {
     errors.phone = LEAD_FIELD_MESSAGES.phone;
   }
   if (!EMAIL_RE.test(value("email"))) errors.email = LEAD_FIELD_MESSAGES.email;
+  if (value("message").length > LEAD_MESSAGE_MAX) errors.message = LEAD_FIELD_MESSAGES.message;
   if (data.get("consent") !== "on") errors.consent = LEAD_FIELD_MESSAGES.consent;
   return errors;
 }
@@ -47,25 +54,28 @@ export function LeadForm({
   const [message, setMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  // Producto preseleccionado desde la ficha: /?producto=<erpCode>#contacto.
-  // Los checkboxes no son controlados: solo se marca el que llega por la URL.
+  // Llegada desde una ficha (/?producto=<erpCode>#contacto): se precarga el mensaje
+  // con el producto (editable) y su código viaja en product_interest (campo oculto).
+  // Los campos no son controlados: solo se escriben en el DOM al montar.
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("producto");
-    if (!code || !/^\d{4}-\d{4}$/.test(code)) return;
-    const input = formRef.current?.querySelector<HTMLInputElement>(
-      `input[name="product_interest"][value="${code}"]`,
-    );
-    if (input) input.checked = true;
-  }, []);
+    const product = products.find((p) => p.erpCode === code);
+    const form = formRef.current;
+    if (!product || !form) return;
+    const hidden = form.querySelector<HTMLInputElement>('input[name="product_interest"]');
+    const textarea = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+    if (hidden) hidden.value = product.erpCode;
+    if (textarea && !textarea.value) {
+      textarea.value = t.fields.message.prefill.replace("{producto}", product.name);
+    }
+  }, [products, t.fields.message.prefill]);
 
   useEffect(() => {
     if (status === "success") successRef.current?.focus();
   }, [status]);
 
-  const groups = [...new Set(products.map((p) => p.groupLabel))];
-
   function focusFirstError(errors: FieldErrors) {
-    const first = [...TEXT_FIELDS, "consent"].find((f) => errors[f as LeadField]);
+    const first = [...TEXT_FIELDS, "message", "consent"].find((f) => errors[f as LeadField]);
     if (first) formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
   }
 
@@ -93,7 +103,8 @@ export function LeadForm({
           city: data.get("city"),
           phone: data.get("phone"),
           email: data.get("email"),
-          product_interest: data.getAll("product_interest"),
+          message: data.get("message"),
+          product_interest: data.getAll("product_interest").filter(Boolean),
           consent: data.get("consent") === "on",
           website: data.get("website") || undefined,
         }),
@@ -187,44 +198,33 @@ export function LeadForm({
         })}
       </div>
 
-      <fieldset className="mt-6">
-        <legend className="text-xs font-semibold tracking-widest text-zenit-gray uppercase">{t.fields.products.label}</legend>
-        <p className="mt-1 text-xs text-zenit-gray">{t.fields.products.hint}</p>
-        {fieldErrors.product_interest ? (
-          <p className="mt-1 text-sm font-semibold text-zenit-black">⚠ {fieldErrors.product_interest}</p>
+      <div className="mt-4">
+        <label htmlFor={`${formId}-message`} className="block text-xs font-semibold tracking-widest text-zenit-gray uppercase">
+          {t.fields.message.label}
+        </label>
+        <textarea
+          id={`${formId}-message`}
+          name="message"
+          rows={4}
+          maxLength={LEAD_MESSAGE_MAX}
+          aria-invalid={fieldErrors.message ? true : undefined}
+          aria-describedby={cn(`${formId}-message-hint`, fieldErrors.message && `${formId}-message-error`)}
+          className={cn(
+            "mt-2 block w-full resize-y rounded-xl border bg-zenit-gray-50 px-4 py-3 text-base text-zenit-black transition-[border-color,background-color,box-shadow] duration-200 outline-none focus-visible:border-zenit-green focus-visible:bg-zenit-white focus-visible:ring-4 focus-visible:ring-zenit-green/15 focus-visible:outline-none motion-reduce:transition-none",
+            fieldErrors.message ? "border-zenit-black ring-1 ring-zenit-black" : "border-zenit-gray-200",
+          )}
+        />
+        <p id={`${formId}-message-hint`} className="mt-1 text-xs text-zenit-gray">
+          {t.fields.message.hint}
+        </p>
+        {fieldErrors.message ? (
+          <p id={`${formId}-message-error`} className="mt-1 text-sm font-semibold text-zenit-black">
+            ⚠ {fieldErrors.message}
+          </p>
         ) : null}
-        <div className="mt-3 space-y-4">
-          {groups.map((group) => (
-            <div key={group}>
-              <p className="text-xs font-semibold tracking-wide text-zenit-gray uppercase">{group}</p>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {products
-                  .filter((p) => p.groupLabel === group)
-                  .map((product) => {
-                    const id = `${formId}-p-${product.erpCode}`;
-                    return (
-                      <li key={product.erpCode}>
-                        <label
-                          htmlFor={id}
-                          className="flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-zenit-gray-200 bg-zenit-gray-50 py-1.5 pr-3.5 pl-2.5 text-sm text-zenit-black transition-colors hover:border-zenit-green/50 has-checked:border-zenit-green has-checked:bg-zenit-green/10 has-focus-visible:outline-3 has-focus-visible:outline-zenit-green motion-reduce:transition-none"
-                        >
-                          <input
-                            id={id}
-                            type="checkbox"
-                            name="product_interest"
-                            value={product.erpCode}
-                            className="size-4 shrink-0 accent-zenit-green focus-visible:outline-none"
-                          />
-                          {product.name}
-                        </label>
-                      </li>
-                    );
-                  })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </fieldset>
+        {/* Código del producto si se llegó desde su ficha (lo escribe el efecto de arriba). */}
+        <input type="hidden" name="product_interest" defaultValue="" />
+      </div>
 
       {/* Honeypot: invisible para personas y lectores de pantalla. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">

@@ -150,7 +150,12 @@ export const site = {
       city: { label: "Ciudad", autoComplete: "address-level2" },
       phone: { label: "Teléfono", autoComplete: "tel", hint: "Con código de área, por ejemplo 0414 123 4567" },
       email: { label: "Correo electrónico", autoComplete: "email" },
-      products: { label: "Productos de interés", hint: "Opcional. Marca todos los que te interesen." },
+      message: {
+        label: "Mensaje",
+        hint: "Opcional. Cuéntanos qué productos te interesan o qué necesitas.",
+        /** Texto inicial cuando se llega desde una ficha de producto. */
+        prefill: "Me interesa: {producto}.",
+      },
     },
     consent: "Al enviar, aceptas que Inversiones Lefre te contacte.",
     submit: "Enviar solicitud",
