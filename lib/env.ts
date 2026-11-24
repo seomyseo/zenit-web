@@ -17,6 +17,8 @@ const publicSchema = z.object({
 /** Variables solo de servidor. No importar desde componentes de cliente. */
 const serverSchema = z.object({
   LEADS_WEBHOOK_URL: optionalUrl,
+  /** Opcional: se envía como "Authorization: Bearer <token>" para que n8n verifique el origen. */
+  LEADS_WEBHOOK_TOKEN: z.preprocess(emptyToUndefined, z.string().min(16).optional()),
 });
 
 export const publicEnv = publicSchema.parse({
@@ -27,5 +29,6 @@ export const publicEnv = publicSchema.parse({
 export function getServerEnv() {
   return serverSchema.parse({
     LEADS_WEBHOOK_URL: process.env.LEADS_WEBHOOK_URL,
+    LEADS_WEBHOOK_TOKEN: process.env.LEADS_WEBHOOK_TOKEN,
   });
 }

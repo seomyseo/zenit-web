@@ -13,7 +13,14 @@ function keepRangesTogether(text: string) {
  * Tarjeta de catálogo. En móvil es horizontal y compacta (foto a la izquierda);
  * desde sm, vertical. Toda la tarjeta es un solo enlace a la ficha (por el título).
  */
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  headingLevel = "h4",
+}: {
+  product: Product;
+  headingLevel?: "h2" | "h3" | "h4";
+}) {
+  const Heading = headingLevel;
   const image = product.images[0]!;
   return (
     <article className="group relative flex h-full overflow-hidden rounded-sm border border-border bg-zenit-white transition-[border-color,box-shadow] focus-within:border-zenit-green hover:border-zenit-green hover:shadow-[0_8px_24px_-12px_rgb(0_0_0/0.25)] sm:flex-col">
@@ -33,14 +40,14 @@ export function ProductCard({ product }: { product: Product }) {
             {product.model}
           </p>
         ) : null}
-        <h4 className="mt-0.5 text-[0.95rem] leading-snug font-bold text-zenit-black sm:mt-1 sm:text-base">
+        <Heading className="mt-0.5 text-[0.95rem] leading-snug font-bold text-zenit-black sm:mt-1 sm:text-base">
           <Link
             href={`/productos/${product.slug}`}
-            className="outline-none after:absolute after:inset-0 after:content-['']"
+            className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:outline-3 focus-visible:after:-outline-offset-3 focus-visible:after:outline-zenit-green"
           >
             {keepRangesTogether(product.name)}
           </Link>
-        </h4>
+        </Heading>
         <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-zenit-gray sm:mt-2">
           {product.shortDescription}
         </p>

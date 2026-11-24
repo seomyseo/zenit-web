@@ -13,6 +13,8 @@ type CatalogProps = {
 
 export function Catalog({ groups, headingLevel = "h2" }: CatalogProps) {
   const Heading = headingLevel;
+  const GroupHeading = headingLevel === "h1" ? "h2" : "h3";
+  const cardHeading = headingLevel === "h1" ? "h3" : "h4";
   const { catalog } = site;
 
   return (
@@ -34,14 +36,14 @@ export function Catalog({ groups, headingLevel = "h2" }: CatalogProps) {
 
         {groups.map(({ group, products }) => (
           <div key={group} className="mt-12" data-group={group}>
-            <h3 className="flex items-baseline gap-3 border-b-2 border-zenit-black pb-3 text-xl font-bold text-zenit-black sm:text-2xl">
+            <GroupHeading className="flex items-baseline gap-3 border-b-2 border-zenit-black pb-3 text-xl font-bold text-zenit-black sm:text-2xl">
               {GROUP_LABELS[group]}
               <span className="text-base font-semibold text-zenit-gray">({products.length})</span>
-            </h3>
+            </GroupHeading>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
               {products.map((product, index) => (
                 <Reveal as="li" key={product.erpCode} delay={Math.min(index, 6) * 0.04}>
-                  <ProductCard product={product} />
+                  <ProductCard product={product} headingLevel={cardHeading} />
                 </Reveal>
               ))}
             </ul>

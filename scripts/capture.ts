@@ -5,7 +5,7 @@
  *
  * Uso: pnpm build && pnpm capture [ruta]   (por defecto "/")
  */
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { chromium, type Page } from "@playwright/test";
@@ -42,9 +42,10 @@ async function scrollThrough(page: Page) {
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
-  const server = spawn("pnpm", ["start", "--port", String(PORT)], {
+  // next se lanza directo con node (sin shell) para poder cerrarlo con certeza al terminar.
+  const nextBin = path.resolve(import.meta.dirname, "..", "node_modules", "next", "dist", "bin", "next");
+  const server = spawn(process.execPath, [nextBin, "start", "--port", String(PORT)], {
     stdio: "ignore",
-    shell: true,
   });
   try {
     await waitForServer(BASE + ROUTE);
@@ -62,7 +63,7 @@ async function main() {
       await page.screenshot({ path: file, fullPage: true });
       console.log(file);
 
-      if (width === 360) {
+      if (width === 360 && ROUTE === "/") {
         await page.getByRole("button", { name: "Abrir menú" }).click();
         await page.getByRole("dialog").waitFor();
         await page.waitForTimeout(500);
@@ -76,7 +77,7 @@ async function main() {
   } finally {
     if (server.pid) {
       if (process.platform === "win32") {
-        spawn("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });
+        spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });
       } else {
         server.kill();
       }
