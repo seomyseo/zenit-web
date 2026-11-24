@@ -3,6 +3,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { ProductCard } from "@/components/products/product-card";
 import { Button } from "@/components/ui/button";
 import { site } from "@/content/site";
+import { toCard } from "@/lib/card-data";
 import { GROUP_LABELS, type Product, type ProductGroup } from "@/lib/products";
 
 type CatalogProps = {
@@ -40,10 +41,11 @@ export function Catalog({ groups, headingLevel = "h2" }: CatalogProps) {
               {GROUP_LABELS[group]}
               <span className="text-base font-semibold text-zenit-gray">({products.length})</span>
             </GroupHeading>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            {/* Todas las tarjetas a la vista (sin carrusel); entran desde la derecha, escalonadas por columna. */}
+            <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product, index) => (
-                <Reveal as="li" key={product.erpCode} delay={Math.min(index, 6) * 0.04}>
-                  <ProductCard product={product} headingLevel={cardHeading} />
+                <Reveal as="li" key={product.erpCode} from="right" delay={(index % 3) * 0.08}>
+                  <ProductCard product={toCard(product)} headingLevel={cardHeading} />
                 </Reveal>
               ))}
             </ul>

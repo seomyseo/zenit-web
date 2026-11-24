@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/products/product-card";
+import { toCard } from "@/lib/card-data";
 import { Button } from "@/components/ui/button";
 import { site } from "@/content/site";
 import { getImageSize } from "@/lib/image-size";
@@ -284,7 +285,7 @@ export default async function ProductPage({ params }: PageProps<"/productos/[slu
             <ul className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
               {related.map((item) => (
                 <li key={item.erpCode}>
-                  <ProductCard product={item} headingLevel="h3" />
+                  <ProductCard product={toCard(item)} headingLevel="h3" />
                 </li>
               ))}
             </ul>
