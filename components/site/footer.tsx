@@ -8,7 +8,7 @@ import { publicEnv } from "@/lib/env";
 export function SiteFooter() {
   const { footer, owner, instagram, header } = site;
   return (
-    <footer className="bg-zenit-black text-zenit-white">
+    <footer className="bg-zenit-green text-zenit-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:py-16">
         <div>
           <ZenitLogo variant="blanco" height={56} />
@@ -64,7 +64,7 @@ export function SiteFooter() {
               <li>
                 <WhatsAppLink
                   href={publicEnv.NEXT_PUBLIC_WHATSAPP_URL}
-                  className="border-zenit-white text-zenit-white hover:bg-zenit-white hover:text-zenit-black"
+                  className="border-zenit-white text-zenit-white hover:bg-zenit-white hover:text-zenit-green"
                 />
               </li>
             ) : null}
@@ -72,7 +72,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-zenit-white/15">
-        <p className="mx-auto max-w-7xl px-4 py-5 text-xs text-zenit-white/70 sm:px-6">
+        <p className="mx-auto max-w-7xl px-4 py-5 text-xs text-zenit-white/90 sm:px-6">
           © {new Date().getFullYear()} {owner.name}. {footer.rights}
         </p>
       </div>

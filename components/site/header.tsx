@@ -15,22 +15,6 @@ export function SiteHeader() {
         {site.header.skipToContent}
       </a>
 
-      {/* Barra superior discreta: vínculo con Inversiones Lefre. */}
-      <div className="bg-zenit-black text-zenit-white">
-        <div className="mx-auto flex h-8 max-w-7xl items-center justify-end px-4 sm:px-6">
-          <a
-            href={site.owner.url}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-1 text-xs font-medium tracking-wide text-zenit-white/85 hover:text-zenit-white"
-          >
-            {site.header.distributedBy}
-            <ArrowUpRight aria-hidden="true" className="size-3.5" />
-            <span className="sr-only">(abre en una pestaña nueva)</span>
-          </a>
-        </div>
-      </div>
-
       <header className="sticky top-0 z-50 border-b border-border bg-zenit-white/95 backdrop-blur supports-[backdrop-filter]:bg-zenit-white/85">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-20">
           <Link href="/" aria-label={site.header.homeLabel} className="rounded-sm py-2.5 lg:py-3">
@@ -55,6 +39,17 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Vínculo discreto con Inversiones Lefre (BRIEF §4.1); en móvil va dentro del menú. */}
+            <a
+              href={site.owner.url}
+              target="_blank"
+              rel="noopener"
+              className="mr-2 hidden items-center gap-1 text-xs font-medium text-zenit-gray hover:text-zenit-green xl:inline-flex"
+            >
+              {site.header.distributedBy}
+              <ArrowUpRight aria-hidden="true" className="size-3.5" />
+              <span className="sr-only">{site.header.newTab}</span>
+            </a>
             <Button asChild size="lg" className="hidden h-11 px-4 font-semibold sm:inline-flex">
               <a href={site.header.cta.href}>{site.header.cta.label}</a>
             </Button>

@@ -218,7 +218,7 @@ export default async function ProductPage({ params }: PageProps<"/productos/[slu
               {product.specGroups.map((group) => (
                 <div key={group.title} className="overflow-hidden rounded-sm border border-border bg-zenit-white">
                   <table className="w-full text-left text-sm">
-                    <caption className="bg-zenit-black px-4 py-3 text-left text-sm font-semibold text-zenit-white">
+                    <caption className="bg-zenit-green px-4 py-3 text-left text-sm font-semibold text-zenit-white">
                       {group.title}
                     </caption>
                     <tbody>
