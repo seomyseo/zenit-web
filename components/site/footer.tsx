@@ -71,8 +71,9 @@ export function SiteFooter() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-zenit-white/15">
-        <p className="mx-auto max-w-7xl px-4 py-5 text-xs text-zenit-white/90 sm:px-6">
+      {/* Barra inferior en negro, debajo del footer verde */}
+      <div className="bg-zenit-black">
+        <p className="mx-auto max-w-7xl px-4 py-5 text-xs text-zenit-white/85 sm:px-6">
           © {new Date().getFullYear()} {owner.name}. {footer.rights}
         </p>
       </div>
