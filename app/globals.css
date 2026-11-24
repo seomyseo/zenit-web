@@ -114,3 +114,10 @@
     line-height: 1;
   }
 }
+
+/* Cinta de modelos (laboratorio de hero, variante C). */
+@keyframes zenit-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
