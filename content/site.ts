@@ -133,7 +133,17 @@ export const site = {
   leadForm: {
     eyebrow: "Contacto",
     title: "Quiero distribuir Zenit",
-    lead: "Déjanos tus datos y un asesor de Inversiones Lefre te contactará.",
+    lead: "Déjanos tus datos y un asesor de Inversiones Lefre te contactará para que tengas Zenit en tu ferretería.",
+    aside: {
+      title: "Habla con nosotros",
+      text: "Atendemos a ferreterías y distribuidores de toda Venezuela a través de la red de Inversiones Lefre.",
+      coverage: "Cobertura nacional",
+      website: "lefre.com.ve",
+    },
+    card: {
+      title: "Envía tus datos",
+      text: "Completa el formulario y te contactaremos.",
+    },
     fields: {
       name: { label: "Nombre y apellido", autoComplete: "name" },
       company: { label: "Empresa o ferretería", autoComplete: "organization" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { WhatsAppLink } from "@/components/site/whatsapp-link";
 import { Button } from "@/components/ui/button";
@@ -117,7 +117,7 @@ export function LeadForm({
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-sm border-2 border-zenit-green bg-zenit-white p-6 sm:p-8">
+      <div role="status" className="rounded-xl border-2 border-zenit-green bg-zenit-white p-6">
         <CheckCircle2 aria-hidden="true" className="size-10 text-zenit-green" />
         <h3 ref={successRef} tabIndex={-1} className="mt-4 text-xl font-bold text-zenit-black outline-none">
           {t.success.title}
@@ -144,9 +144,9 @@ export function LeadForm({
       onSubmit={onSubmit}
       noValidate
       aria-describedby={`${formId}-status`}
-      className="relative rounded-sm border border-border bg-zenit-white p-5 sm:p-8"
+      className="relative"
     >
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {TEXT_FIELDS.map((field) => {
           const config = t.fields[field];
           const id = `${formId}-${field}`;
@@ -154,7 +154,7 @@ export function LeadForm({
           const hint = "hint" in config ? config.hint : undefined;
           return (
             <div key={field} className={cn(field === "email" && "sm:col-span-2")}>
-              <label htmlFor={id} className="block text-sm font-semibold text-zenit-black">
+              <label htmlFor={id} className="block text-xs font-semibold tracking-widest text-zenit-gray uppercase">
                 {config.label}
               </label>
               <input
@@ -168,7 +168,7 @@ export function LeadForm({
                 aria-invalid={error ? true : undefined}
                 aria-describedby={cn(hint && `${id}-hint`, error && `${id}-error`) || undefined}
                 className={cn(
-                  "mt-1.5 block h-12 w-full rounded-sm border bg-zenit-white px-3 text-base text-zenit-black outline-none focus-visible:border-zenit-green focus-visible:ring-2 focus-visible:ring-zenit-green/30",
+                  "mt-2 block h-12 w-full rounded-xl border bg-zenit-gray-50 px-4 text-base text-zenit-black transition-[border-color,background-color,box-shadow] duration-200 outline-none focus-visible:border-zenit-green focus-visible:bg-zenit-white focus-visible:ring-4 focus-visible:ring-zenit-green/15 focus-visible:outline-none motion-reduce:transition-none",
                   error ? "border-zenit-black ring-1 ring-zenit-black" : "border-zenit-gray-200",
                 )}
               />
@@ -188,16 +188,16 @@ export function LeadForm({
       </div>
 
       <fieldset className="mt-6">
-        <legend className="text-sm font-semibold text-zenit-black">{t.fields.products.label}</legend>
+        <legend className="text-xs font-semibold tracking-widest text-zenit-gray uppercase">{t.fields.products.label}</legend>
         <p className="mt-1 text-xs text-zenit-gray">{t.fields.products.hint}</p>
         {fieldErrors.product_interest ? (
           <p className="mt-1 text-sm font-semibold text-zenit-black">⚠ {fieldErrors.product_interest}</p>
         ) : null}
-        <div className="mt-3 grid gap-4 md:grid-cols-2">
+        <div className="mt-3 space-y-4">
           {groups.map((group) => (
             <div key={group}>
               <p className="text-xs font-semibold tracking-wide text-zenit-gray uppercase">{group}</p>
-              <ul className="mt-2 space-y-1">
+              <ul className="mt-2 flex flex-wrap gap-2">
                 {products
                   .filter((p) => p.groupLabel === group)
                   .map((product) => {
@@ -206,14 +206,14 @@ export function LeadForm({
                       <li key={product.erpCode}>
                         <label
                           htmlFor={id}
-                          className="flex min-h-11 cursor-pointer items-start gap-3 rounded-sm px-2 py-2 text-sm text-zenit-black hover:bg-muted"
+                          className="flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-zenit-gray-200 bg-zenit-gray-50 py-1.5 pr-3.5 pl-2.5 text-sm text-zenit-black transition-colors hover:border-zenit-green/50 has-checked:border-zenit-green has-checked:bg-zenit-green/10 has-focus-visible:outline-3 has-focus-visible:outline-zenit-green motion-reduce:transition-none"
                         >
                           <input
                             id={id}
                             type="checkbox"
                             name="product_interest"
                             value={product.erpCode}
-                            className="mt-0.5 size-5 shrink-0 accent-zenit-green"
+                            className="size-4 shrink-0 accent-zenit-green focus-visible:outline-none"
                           />
                           {product.name}
                         </label>
@@ -253,9 +253,15 @@ export function LeadForm({
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" size="xl" disabled={sending} className="sm:min-w-56">
+        <Button type="submit" size="xl" disabled={sending} className="group rounded-xl px-8 sm:min-w-56">
           {sending ? <Loader2 aria-hidden="true" className="animate-spin" /> : null}
           {sending ? t.sending : t.submit}
+          {sending ? null : (
+            <ArrowRight
+              aria-hidden="true"
+              className="transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none"
+            />
+          )}
         </Button>
         {showWhatsApp ? <WhatsAppLink href={whatsappUrl} /> : null}
       </div>
