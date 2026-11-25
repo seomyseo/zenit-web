@@ -54,3 +54,6 @@ next-env.d.ts
 
 # capturas de revisión de diseño
 /.screenshots/
+
+# Bundle del servicio zenit-api (pnpm build:api)
+services/zenit-api/dist/

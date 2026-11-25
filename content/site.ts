@@ -137,23 +137,62 @@ export const site = {
   leadForm: {
     eyebrow: "Contacto",
     title: "Quiero distribuir Zenit",
-    lead: "Escríbenos por WhatsApp y un asesor de Inversiones Lefre te atenderá para que tengas Zenit en tu ferretería.",
+    lead: "Déjanos tus datos o escríbenos por WhatsApp y un asesor de Inversiones Lefre te contactará para que tengas Zenit en tu ferretería.",
     aside: {
       title: "Habla con nosotros",
       text: "Atendemos a ferreterías y distribuidores de toda Venezuela a través de la red de Inversiones Lefre.",
+      whatsappText: "¿Prefieres chatear? Escríbenos y te respondemos por WhatsApp.",
       coverage: "Cobertura nacional",
       website: "lefre.com.ve",
     },
     card: {
-      title: "Escríbenos",
-      text: "Cuéntanos qué productos te interesan, tu ciudad y el nombre de tu ferretería.",
-      steps: ["Toca el botón.", "Se abre el chat con el mensaje listo.", "Envíalo y te respondemos."],
+      title: "Envía tus datos",
+      text: "Completa el formulario y te contactaremos.",
+    },
+    fields: {
+      name: { label: "Nombre y apellido", autoComplete: "name" },
+      company: { label: "Empresa o ferretería", autoComplete: "organization" },
+      city: { label: "Ciudad", autoComplete: "address-level2" },
+      phone: { label: "Teléfono", autoComplete: "tel", hint: "Con código de área, por ejemplo 0414 123 4567" },
+      email: { label: "Correo electrónico", autoComplete: "email" },
+      message: {
+        label: "Mensaje",
+        hint: "Opcional. Cuéntanos qué productos te interesan o qué necesitas.",
+        /** Texto inicial cuando se llega desde una ficha de producto (?producto=<erpCode>). */
+        prefill: "Me interesa: {producto}.",
+      },
+    },
+    /** Mensajes de error por campo (los usan el navegador y el servicio zenit-api). */
+    fieldErrors: {
+      name: "Escribe tu nombre y apellido.",
+      company: "Escribe el nombre de tu empresa o ferretería.",
+      city: "Escribe tu ciudad.",
+      phone: "Escribe un teléfono válido, con código de área.",
+      email: "Escribe un correo electrónico válido.",
+      message: "El mensaje no puede pasar de 1000 caracteres.",
+      product_interest: "Revisa el producto de interés.",
+      consent: "Debes aceptar que Inversiones Lefre te contacte.",
+    },
+    consent: "Al enviar, aceptas que Inversiones Lefre te contacte. Tus datos solo se envían por correo a nuestro equipo de mercadeo.",
+    submit: "Enviar solicitud",
+    sending: "Enviando…",
+    success: {
+      title: "¡Gracias! Recibimos tu solicitud.",
+      text: "Un asesor de Inversiones Lefre te contactará pronto.",
+      again: "Enviar otra solicitud",
+    },
+    errors: {
+      generic: "No pudimos enviar tu solicitud. Inténtalo de nuevo en unos minutos o escríbenos por WhatsApp.",
+      network: "No hay conexión. Revisa tu internet e inténtalo de nuevo, o escríbenos por WhatsApp.",
+      fields: "Revisa los campos marcados.",
+      rateLimited: "Recibimos varios intentos seguidos. Espera unos minutos o escríbenos por WhatsApp.",
     },
     whatsapp: "Escríbenos por WhatsApp",
-    instagram: "Escríbenos por Instagram",
-    /** Mensajes precargados ({producto} y {codigo} se reemplazan en las fichas). */
+    /** Mensajes precargados de WhatsApp ({producto} y {codigo} se reemplazan en las fichas). */
     message: "Hola, soy ferretero de [ciudad] y quiero distribuir Zenit.",
     productMessage: "Hola, soy ferretero de [ciudad] y me interesa {producto} ({codigo}).",
+    /** Enlace de la ficha al formulario, con el producto precargado. */
+    productFormLink: "o déjanos tus datos",
   },
 
   footer: {

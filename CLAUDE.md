@@ -7,7 +7,7 @@ Sitio de marca de **Zenit**, marca propia de Inversiones Lefre (mayorista de fer
 
 ## Alcance de esta fase
 
-**Sitio 100 % estático, sin automatizaciones.** Esta fase publica la web de marca y el catálogo informativo. Quedan fuera por ahora, y no se implementan hasta que se indique: `/api/leads`, webhook de n8n, formularios con envío, base de datos y cualquier proceso de servidor. El único canal de contacto es WhatsApp. Cuando lleguen las automatizaciones se vuelve a `output: "standalone"` sin rehacer el diseño (ver "Captación" más abajo).
+**Sitio estático con un único servicio de servidor: el envío del formulario de contacto por correo.** Esta fase publica la web de marca y el catálogo informativo. El sitio sigue siendo `output: "export"` servido por nginx; el formulario de contacto envía un correo a `mercadeo@lefre.com.ve` a través de un contenedor pequeño aparte (`zenit-api`, ver "Captación"). Quedan fuera por ahora, y no se implementan hasta que se indique: webhook de n8n, automatizaciones, base de datos y cualquier otro proceso de servidor. Canales de contacto: formulario por correo y botón de WhatsApp. El sitio está **indexable** en producción (ver "Seguridad").
 
 ## Stack
 
@@ -16,7 +16,8 @@ Sitio de marca de **Zenit**, marca propia de Inversiones Lefre (mayorista de fer
 - Zod para validar los datos de producto. **Sin base de datos por ahora**: los productos son archivos JSON (ver el brief). No agregar Postgres, ORM ni migraciones.
 - Gestor de paquetes: el que ya use el repo; si es nuevo, pnpm.
 - Despliegue: Docker + Traefik. Imagen multietapa: build con pnpm y `out/` servido con nginx alpine. `Dockerfile` y `docker-compose.yml` en la raíz, con un README de despliegue para repetirlo en un VPS nuevo.
-  - Se prueba primero en el VPS propio de VeneTecnologías, con `zenit.com.ve` apuntando a él. Después se mueve al VPS que contrate el cliente: solo cambia el registro A del DNS.
+  - Segundo servicio en el mismo `docker-compose.yml`: `zenit-api` (Node, solo envío del formulario por SMTP), en la red `traefik`, sin puertos publicados. Traefik le envía las peticiones a `/api/` y todo lo demás va a nginx.
+  - Se probó primero en el VPS propio de VeneTecnologías, con `zenit.com.ve` apuntando a él. Después se mueve al VPS que contrate el cliente: solo cambia el registro A del DNS.
   - El dominio está en nic.ve y no tiene correo (sin registros MX): no hay nada que preservar. Antes de cambiar DNS, anotar los registros actuales.
   - Mientras el sitio no esté aprobado, se protege con `SITE_INDEXABLE=false` (ver "Seguridad") y, opcionalmente, un middleware `basicAuth` de Traefik controlado por variable de entorno.
 
@@ -89,10 +90,15 @@ Industrial, técnica y sobria: fondos blancos y negros con el verde como acento,
 - **Afirmaciones ecológicas:** solo se respaldan en las bombas solares (ZBC-002S, ZBP-001S, ZBS-001S), que funcionan con paneles. No escribir "ecológico", "sostenible" ni similares para las bombas eléctricas, presostatos o refrigerantes, y no presentar la marca entera como ecológica.
 - Lo que se omite o se corrige por ahora de las fichas se registra en `content/PENDIENTES.md`.
 
-## Captación (WhatsApp)
-- El contacto es un CTA a WhatsApp con mensaje precargado (por ejemplo, "Soy ferretero de [ciudad] y quiero distribuir Zenit"), usando `NEXT_PUBLIC_WHATSAPP_URL`.
-- Todo el código de captación vive aislado en un único componente (`LeadCta`), para poder sustituirlo más adelante por un formulario con webhook sin tocar el resto.
-- No crear `/api/leads`, ni formulario con envío, ni usar `LEADS_WEBHOOK_URL` en esta fase.
+## Captación (formulario por correo + WhatsApp)
+- **Botón de WhatsApp:** CTA con mensaje precargado (por ejemplo, "Soy ferretero de [ciudad] y quiero distribuir Zenit"), usando `NEXT_PUBLIC_WHATSAPP_URL` (`https://wa.me/584244721107`). En las fichas, el mensaje incluye el producto y su código.
+- **Formulario de contacto** en la sección de contacto: nombre, empresa, ciudad, teléfono, correo, producto de interés (opcional) y consentimiento. Envía un correo a `mercadeo@lefre.com.ve`. Se restaura desde el commit `9177559` y se cambia el destino: en lugar del webhook de n8n, envío por SMTP.
+- **Servicio de envío:** contenedor Node pequeño `zenit-api`, aparte del contenedor nginx. Traefik lo enruta con `Host(zenit.com.ve) && PathPrefix(/api/)`. El sitio estático no cambia.
+  - Variables de ejecución (no de build), solo en el `.env` del servidor: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`, `MAIL_TO=mercadeo@lefre.com.ve`.
+  - **`MAIL_FROM` debe ser una dirección de un dominio con correo propio (por ejemplo, `lefre.com.ve`), no `@zenit.com.ve`**: ese dominio no tiene correo ni SPF/DKIM y los mensajes caerían en spam. Poner el correo del visitante en `Reply-To`.
+  - Validación con Zod en servidor, honeypot, límite de intentos por IP, tamaño máximo del cuerpo, escape de todo el contenido del correo (sin HTML sin sanear) y errores genéricos hacia el cliente.
+  - Si el envío falla, el formulario muestra un mensaje claro y ofrece el botón de WhatsApp como alternativa.
+- Todo el código de captación vive aislado (`LeadCta` para WhatsApp y un componente `ContactForm`) para poder cambiar el destino más adelante (webhook de n8n, CRM) sin tocar el resto.
 
 ## Herramientas de verificación
 - **Playwright** (MCP y pruebas en `tests/`): comprobar visualmente cada sección terminada en móvil y escritorio, y probar que el CTA de WhatsApp abre el enlace con el mensaje correcto.
@@ -102,15 +108,16 @@ Industrial, técnica y sobria: fondos blancos y negros con el verde como acento,
 
 ## Seguridad
 - Secretos solo en variables de entorno; `.env` fuera de git y `.env.example` actualizado.
-- **Indexación controlada:** `NEXT_PUBLIC_SITE_INDEXABLE` (por defecto `false`). Si es `false`, todas las páginas llevan `<meta name="robots" content="noindex, nofollow">` y `robots.txt` devuelve `Disallow: /`; el sitemap no se publica. Se cambia a `true` solo al lanzar. Al ser estático, es una variable de build: hay que reconstruir la imagen para cambiarla.
+- **Indexación controlada:** `NEXT_PUBLIC_SITE_INDEXABLE`. En producción vale `true` (sitio indexable, `robots.txt` abierto con enlace al sitemap, `sitemap.xml` publicado). Si vale `false` (entornos de prueba), todas las páginas llevan `<meta name="robots" content="noindex, nofollow">`, `robots.txt` devuelve `Disallow: /` y no se publica el sitemap. El valor por defecto del código sigue siendo `false`, para que un entorno nuevo nunca se indexe por accidente. Al ser estático, es una variable de build: hay que reconstruir la imagen para cambiarla.
 - Cabeceras de seguridad en la configuración de nginx (`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` o CSP) y HTTPS forzado desde Traefik.
-- Cuando se reactive `/api/leads` (fase de automatizaciones): validar en servidor, honeypot, límite de intentos por IP, nunca devolver detalles internos en los errores, y no registrar en logs teléfonos ni emails.
+- Servicio `zenit-api`: credenciales SMTP solo en variables de entorno del servidor, nunca en el repositorio ni en el build; contenedor sin puertos publicados, ejecutado como usuario sin privilegios; nunca devolver detalles internos en los errores; no registrar en logs teléfonos ni correos.
+- Datos personales: el formulario lleva casilla de consentimiento y no se guarda nada en el servidor; el único destino es el correo de mercadeo.
 
 ## No hacer
 - No cambiar logo, colores ni tipografías de marca por gusto propio.
 - No usar el lema "Impulsando el mañana con la energía de hoy" en el sitio: aparece en las fichas de las bombas, pero el lema oficial, confirmado por el cliente, es TECNOLOGÍA DE ALTURA.
 - No agregar login, carrito, precios, blog ni filtros (fuera de alcance, ver el brief).
-- No agregar rutas de API, procesos de servidor ni integraciones (n8n, webhooks, bases de datos) en esta fase.
+- No agregar más procesos de servidor ni integraciones (n8n, webhooks, bases de datos) fuera del servicio `zenit-api` del formulario de contacto en esta fase.
 - No instalar dependencias pesadas para algo que se resuelve con CSS.
 
 ## Pendientes de marca

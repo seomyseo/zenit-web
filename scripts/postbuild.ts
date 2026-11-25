@@ -53,6 +53,12 @@ const expected = [
   "404.html",
   "productos.html",
   "robots.txt",
+  "favicon.ico",
+  "icon.svg",
+  "apple-touch-icon.png",
+  "icon-192.png",
+  "icon-512.png",
+  "manifest.webmanifest",
   ...published.map((p) => `productos/${p.slug}.html`),
   ...published.flatMap((p) => p.images.map((image) => image.src.replace(/^\//, ""))),
 ];

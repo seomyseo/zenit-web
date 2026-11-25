@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Bundle generado del servicio zenit-api (pnpm build:api).
+    "services/zenit-api/dist/**",
   ]),
 ]);
 

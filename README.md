@@ -1,6 +1,11 @@
 # zenit.com.ve
 
-Sitio de marca de **Zenit** (marca de Inversiones Lefre). Next.js exportado como sitio **100 % estático** (`out/`), servido con **nginx** detrás del **Traefik** del VPS. Sin base de datos, sin API y sin formularios: el contacto es un botón de WhatsApp con mensaje precargado (`components/leads/lead-cta.tsx`).
+Sitio de marca de **Zenit** (marca de Inversiones Lefre). Dos contenedores detrás del **Traefik** del VPS:
+
+- **`zenit-web`**: Next.js exportado como sitio **estático** (`out/`), servido con **nginx**.
+- **`zenit-api`**: servicio Node mínimo con una sola función. Recibe el formulario de contacto (`POST /api/contact`) y lo envía por correo (SMTP) a `mercadeo@lefre.com.ve`. No guarda nada.
+
+Además del formulario, el contacto tiene un botón de WhatsApp con mensaje precargado ([`components/leads/lead-cta.tsx`](components/leads/lead-cta.tsx)). Sin base de datos.
 
 - Reglas del proyecto: [`CLAUDE.md`](CLAUDE.md). Contenido y alcance: [`BRIEF-ZENIT.md`](BRIEF-ZENIT.md).
 - Pendientes de datos: [`content/PENDIENTES.md`](content/PENDIENTES.md). Pendientes de diseño: [`content/DISENO-PENDIENTE.md`](content/DISENO-PENDIENTE.md).
@@ -11,13 +16,36 @@ Requisitos: Node 22 y pnpm (`corepack enable`).
 
 ```bash
 pnpm install
-pnpm dev            # http://localhost:3000
+pnpm dev            # http://localhost:3000 (el formulario no tiene /api/ aquí: muestra el error y WhatsApp)
 pnpm build          # genera out/ (valida productos antes y comprueba out/ después)
 pnpm start          # sirve out/ con las mismas reglas que nginx
 pnpm lint && pnpm typecheck && pnpm test
 ```
 
-Las variables (`.env.example`) son **de build**: se incrustan al compilar. Para probar un build local con valores, exportarlas antes de `pnpm build`.
+Las pruebas (`pnpm test`, requieren `pnpm build` antes) levantan solas un SMTP simulado ([`tests/mock-smtp.mjs`](tests/mock-smtp.mjs)), el bundle real de `zenit-api` y el sitio estático, con `/api/` reenviado como lo hace Traefik.
+
+Para probar el formulario a mano con un SMTP real o simulado:
+
+```bash
+node tests/mock-smtp.mjs                                  # SMTP en :2525, mensajes en http://localhost:2526/messages
+SMTP_HOST=127.0.0.1 SMTP_PORT=2525 MAIL_FROM="Sitio Zenit <web@lefre.com.ve>" pnpm dev:api   # :3001
+pnpm start --api http://localhost:3001                    # sitio en :3000 con /api/ → zenit-api
+```
+
+### Código del formulario
+
+| Pieza | Dónde |
+| --- | --- |
+| Formulario (navegador) | [`components/leads/contact-form.tsx`](components/leads/contact-form.tsx) |
+| Campos, mensajes y esquema Zod (compartidos) | [`lib/contact/`](lib/contact/) y `site.leadForm` en [`content/site.ts`](content/site.ts) |
+| Servicio | [`services/zenit-api/src/`](services/zenit-api/src/): `app.ts` (HTTP, validación, honeypot, límite, tamaño), `email.ts` (correo escapado), `main.ts` (variables y SMTP) |
+| Bundle | `pnpm build:api` → `services/zenit-api/dist/server.cjs` (un solo archivo, sin `node_modules`) |
+
+Para cambiar el destino más adelante (webhook de n8n, CRM) se cambia `main.ts` (la función `send`) sin tocar el sitio.
+
+### Íconos
+
+`pnpm assets:icons` genera `favicon.ico` (16/32/48), `icon.svg`, `apple-touch-icon.png`, `icon-192/512.png` y `manifest.webmanifest` en `public/`. Usa el águila del logo oficial (`public/brand/zenit-color.svg`), recortada a la cabeza y las franjas del ala, sin redibujar nada.
 
 ---
 
@@ -28,25 +56,40 @@ Las variables (`.env.example`) son **de build**: se incrustan al compilar. Para 
 | Pieza | Valor |
 | --- | --- |
 | Ruta en el VPS | `/opt/zenit` |
-| Contenedor | `zenit-web` (nginx:alpine, puerto 80 interno, **sin puertos publicados**) |
+| Contenedores | `zenit-web` (nginx:alpine, puerto 80 interno) y `zenit-api` (Node 22, puerto 3001 interno). **Ninguno publica puertos.** |
 | Red Docker | `traefik` (externa, la del Traefik existente) |
-| Router de Traefik | `zenit`, entrypoint `websecure`, certresolver `myresolver` (TLS-ALPN) |
+| Router `zenit` | `Host(zenit.com.ve) \|\| Host(www.zenit.com.ve)` → `zenit-web`. Entrypoint `websecure`, certresolver `myresolver` (TLS-ALPN) |
+| Router `zenit-api` | `Host(zenit.com.ve) && PathPrefix(/api/)` → `zenit-api`, con `priority=100` para ganarle al router `zenit` |
 | Dominio | `zenit.com.ve`; `www.zenit.com.ve` redirige 301 al dominio sin www |
-| Reinicio | `restart: unless-stopped` |
+| Reinicio | `restart: unless-stopped` (ambos) |
 
-No se crea otro Traefik: este proyecto solo añade un contenedor con etiquetas para el Traefik que ya corre. HTTP → HTTPS lo redirige Traefik.
+No se crea otro Traefik: este proyecto solo añade dos contenedores con etiquetas para el Traefik que ya corre. HTTP → HTTPS lo redirige Traefik.
+
+`zenit-api` corre como usuario `node` (sin privilegios), con sistema de archivos de solo lectura, sin capacidades de Linux (`cap_drop: ALL`), `no-new-privileges` y 128 MB de memoria. La imagen solo contiene Node y un archivo (`server.cjs`).
 
 > **Cloudflare:** el certificado se valida por TLS-ALPN, así que los registros `zenit.com.ve` y `www.zenit.com.ve` deben estar en **DNS only** (nube gris), **nunca con proxy** (nube naranja).
 
 ### Variables (`/opt/zenit/.env`, no va a git)
 
-Son de **build**: si se cambian, hay que reconstruir (`docker compose up -d --build`).
+**Sitio (`zenit-web`), de build:** si se cambian, hay que reconstruir (`docker compose up -d --build`).
+
+| Variable | Producción | Para qué |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `https://zenit.com.ve` | URL canónica, sitemap, Open Graph. Obligatoria. |
+| `NEXT_PUBLIC_WHATSAPP_URL` | `https://wa.me/584244721107` | Botón de WhatsApp. Formato `https://wa.me/58XXXXXXXXXX`. Vacía: usa el número oficial fijado en `lib/env.ts`. |
+| `NEXT_PUBLIC_SITE_INDEXABLE` | `true` | `true`: indexable, `robots.txt` abierto con `Sitemap`, `sitemap.xml` publicado. Vacía o `false` (entornos de prueba): `noindex` en todas las páginas, `robots.txt` con `Disallow: /` y sin sitemap. |
+
+**Formulario (`zenit-api`), de ejecución:** no entran en ninguna imagen. Tras cambiarlas basta `docker compose up -d zenit-api`.
 
 | Variable | Ejemplo | Para qué |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://zenit.com.ve` | URL canónica, sitemap, Open Graph. Obligatoria. |
-| `NEXT_PUBLIC_WHATSAPP_URL` | `https://wa.me/58XXXXXXXXXX` | Botón de contacto. Vacía: el botón lleva a Instagram @lefrevzla. |
-| `NEXT_PUBLIC_SITE_INDEXABLE` | `false` | Solo `true` permite indexar. Con cualquier otro valor: `noindex` en todas las páginas, `robots.txt` con `Disallow: /` y sin `sitemap.xml`. Poner `true` solo al lanzar. |
+| `SMTP_HOST` | `smtp.servidor-de-lefre.com` | Servidor SMTP. Obligatoria. |
+| `SMTP_PORT` | `587` | 587 (STARTTLS, obligatorio si hay usuario) o 465 (TLS directo). |
+| `SMTP_USER` / `SMTP_PASS` | — | Credenciales. Van juntas. Si la clave tiene `$`, entre comillas simples: `SMTP_PASS='abc$123'`. |
+| `MAIL_FROM` | `"Sitio Zenit <usuario@lefre.com.ve>"` | Remitente. **Debe ser de un dominio con correo propio (@lefre.com.ve), nunca @zenit.com.ve**: ese dominio no tiene correo ni SPF/DKIM y caería en spam. Obligatoria. |
+| `MAIL_TO` | `mercadeo@lefre.com.ve` | Destino de los formularios. |
+
+El correo del visitante va en `Reply-To`: "Responder" desde el buzón de mercadeo le escribe a él. Si falta `SMTP_HOST` o `MAIL_FROM`, `zenit-api` se detiene con un mensaje claro en `docker compose logs zenit-api`. El resto del sitio sigue funcionando y el formulario ofrece WhatsApp.
 
 ### ⚠️ Antes del primer despliegue: bajar la página provisional
 
@@ -65,9 +108,10 @@ sudo mkdir -p /opt/zenit && sudo chown "$USER" /opt/zenit
 git clone <URL-DEL-REPOSITORIO> /opt/zenit
 cd /opt/zenit
 
-# 2. Variables
+# 2. Variables (valores de producción: ver las tablas de arriba)
 cp .env.example .env
-nano .env        # completar NEXT_PUBLIC_SITE_URL, NEXT_PUBLIC_WHATSAPP_URL, NEXT_PUBLIC_SITE_INDEXABLE
+chmod 600 .env
+nano .env
 
 # 3. Comprobar que existe la red del Traefik
 docker network ls | grep traefik
@@ -77,12 +121,16 @@ docker network ls | grep traefik
 docker compose up -d --build
 
 # 5. Verificar
-docker compose ps
-docker compose logs --tail=50 zenit-web
-curl -sI https://zenit.com.ve | head -n 5          # 200 y cabeceras de seguridad
-curl -sI https://www.zenit.com.ve | head -n 5      # 301 → https://zenit.com.ve/
-curl -s https://zenit.com.ve/robots.txt
+docker compose ps                                   # zenit-api debe quedar "healthy"
+docker compose logs --tail=50 zenit-web zenit-api   # zenit-api: "Conexión SMTP verificada"
+curl -sI https://zenit.com.ve | head -n 5           # 200 y cabeceras de seguridad
+curl -sI https://www.zenit.com.ve | head -n 5       # 301 → https://zenit.com.ve/
+curl -s  https://zenit.com.ve/robots.txt            # producción: Allow y Sitemap
+curl -sI https://zenit.com.ve/sitemap.xml           # producción: 200
+curl -s  https://zenit.com.ve/api/health            # {"ok":true,"status":"up"}
 ```
+
+Después, enviar el formulario una vez desde el sitio y confirmar que el correo llega a `mercadeo@lefre.com.ve` (revisar también la carpeta de spam la primera vez).
 
 El primer certificado puede tardar unos segundos; si da error de TLS, revisar los logs del Traefik (`docker logs <contenedor-traefik> --tail=100`) y que el DNS no tenga proxy de Cloudflare.
 
@@ -93,17 +141,11 @@ cd /opt/zenit
 git pull && docker compose up -d --build
 ```
 
-El build ocurre dentro de Docker (Node 22 + pnpm) y la imagen final solo contiene nginx y `out/`. Las imágenes viejas se pueden limpiar con `docker image prune -f`.
+El build ocurre dentro de Docker (Node 22 + pnpm, una etapa de dependencias compartida por las dos imágenes). Las imágenes finales solo contienen nginx con `out/` y Node con `server.cjs`. Las imágenes viejas se pueden limpiar con `docker image prune -f`.
 
-### Lanzamiento (abrir a buscadores)
+### Entorno de prueba (sin indexar)
 
-```bash
-cd /opt/zenit
-sed -i 's/^NEXT_PUBLIC_SITE_INDEXABLE=.*/NEXT_PUBLIC_SITE_INDEXABLE=true/' .env
-docker compose up -d --build
-curl -s https://zenit.com.ve/robots.txt       # debe mostrar Allow y Sitemap
-curl -sI https://zenit.com.ve/sitemap.xml     # 200
-```
+En un VPS o dominio de prueba, dejar `NEXT_PUBLIC_SITE_INDEXABLE` vacía o en `false` y reconstruir: todas las páginas llevan `noindex`, `robots.txt` bloquea todo y no hay sitemap. El valor por defecto del código es `false`, para que un entorno nuevo nunca se indexe por accidente.
 
 ### Opcional: proteger con usuario y contraseña (Traefik basicAuth)
 
@@ -114,7 +156,7 @@ Mientras el sitio no esté aprobado se puede pedir clave:
 3. En `docker-compose.yml`, sustituir la línea `traefik.http.routers.zenit.middlewares=zenit-www-redirect` por las dos líneas comentadas de `zenit-auth`.
 4. `docker compose up -d` (no hace falta `--build`: las etiquetas no son de build).
 
-Para quitarla, revertir el paso 3 y volver a levantar.
+Para quitarla, revertir el paso 3 y volver a levantar. La protección cubre el router `zenit`; `/api/contact` no la necesita (solo acepta el formulario).
 
 ---
 
@@ -169,7 +211,7 @@ El sitio no guarda datos: mover es reconstruir en el VPS nuevo y cambiar el DNS.
    sudo mkdir -p /opt/zenit && sudo chown "$USER" /opt/zenit
    git clone <URL-DEL-REPOSITORIO> /opt/zenit
    cd /opt/zenit
-   cp .env.example .env && nano .env    # mismos valores que en el VPS anterior
+   cp .env.example .env && chmod 600 .env && nano .env    # mismos valores que en el VPS anterior (incluido SMTP)
    ```
 
 5. **Levantar:**
@@ -177,11 +219,11 @@ El sitio no guarda datos: mover es reconstruir en el VPS nuevo y cambiar el DNS.
    docker compose up -d --build
    ```
    Se puede comprobar antes de cambiar el DNS forzando la resolución:
-   `curl -sI --resolve zenit.com.ve:443:IP-NUEVA https://zenit.com.ve` (el certificado aún no existirá hasta el paso 6; esto solo confirma que responde).
+   `curl -sI --resolve zenit.com.ve:443:IP-NUEVA https://zenit.com.ve` (el certificado aún no existirá hasta el paso 6; esto solo confirma que responde). `docker compose logs zenit-api` debe mostrar "Conexión SMTP verificada" (el SMTP de Lefre puede requerir autorizar la IP nueva).
 
 6. **Cambiar el registro A en Cloudflare** de `zenit.com.ve` (y `www`) a la IP del VPS nuevo, en **DNS only** (sin proxy). Con TTL bajo, el cambio se propaga en minutos; Traefik emite el certificado en la primera visita.
 
-7. **Verificar** (como en "Primer despliegue", paso 5) y **apagar el sitio en el VPS anterior**:
+7. **Verificar** (como en "Primer despliegue", paso 5, y un envío real del formulario) y **apagar el sitio en el VPS anterior**:
    ```bash
    cd /opt/zenit && docker compose down
    ```

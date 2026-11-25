@@ -1,11 +1,14 @@
 # zenit.com.ve detrás del Traefik que ya corre en el VPS.
-# No publica puertos: Traefik llega por la red externa "traefik".
+# Ningún servicio publica puertos: Traefik llega por la red externa "traefik".
+#   zenit-web  → todo el sitio (nginx, estático)
+#   zenit-api  → solo /api/ (formulario de contacto por correo)
 # Actualizar: git pull && docker compose up -d --build
 
 services:
   zenit-web:
     build:
       context: .
+      target: web
       # Variables de BUILD (se incrustan al compilar). Se leen de .env (no va a git).
       args:
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?Falta NEXT_PUBLIC_SITE_URL en .env}
@@ -26,6 +29,7 @@ services:
       - traefik.http.routers.zenit.entrypoints=websecure
       - traefik.http.routers.zenit.tls=true
       - traefik.http.routers.zenit.tls.certresolver=myresolver
+      - traefik.http.routers.zenit.service=zenit
       - traefik.http.routers.zenit.middlewares=zenit-www-redirect
 
       # Para proteger con usuario y contraseña mientras el sitio no esté aprobado,
@@ -40,6 +44,49 @@ services:
 
       # nginx escucha en el 80 interno.
       - traefik.http.services.zenit.loadbalancer.server.port=80
+
+  zenit-api:
+    build:
+      context: .
+      target: api
+    image: zenit-api:latest
+    container_name: zenit-api
+    restart: unless-stopped
+    # Variables de EJECUCIÓN (no de build), solo en el .env del servidor. Si falta
+    # SMTP_HOST o MAIL_FROM, el servicio sale con un mensaje claro en los logs y el
+    # formulario ofrece WhatsApp; el resto del sitio sigue funcionando.
+    environment:
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      MAIL_TO: ${MAIL_TO:-mercadeo@lefre.com.ve}
+    # Endurecimiento: usuario sin privilegios (en la imagen), sistema de archivos de
+    # solo lectura, sin capacidades de Linux y con memoria limitada.
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+
+      # Solo /api/ de zenit.com.ve. La prioridad explícita gana al router "zenit"
+      # (cuya regla es más larga y, sin prioridad, se llevaría también /api/).
+      - traefik.http.routers.zenit-api.rule=Host(`zenit.com.ve`) && PathPrefix(`/api/`)
+      - traefik.http.routers.zenit-api.priority=100
+      - traefik.http.routers.zenit-api.entrypoints=websecure
+      - traefik.http.routers.zenit-api.tls=true
+      - traefik.http.routers.zenit-api.tls.certresolver=myresolver
+      - traefik.http.routers.zenit-api.service=zenit-api
+
+      # Node escucha en el 3001 interno.
+      - traefik.http.services.zenit-api.loadbalancer.server.port=3001
 
 networks:
   traefik:

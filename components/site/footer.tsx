@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ZenitLogo } from "@/components/brand/zenit-logo";
 import { LeadCta } from "@/components/leads/lead-cta";
 import { site } from "@/content/site";
-import { publicEnv } from "@/lib/env";
 
 export function SiteFooter() {
   const { footer, owner, instagram, header } = site;
@@ -60,12 +59,9 @@ export function SiteFooter() {
                 <span className="sr-only">{header.newTab}</span>
               </a>
             </li>
-            {/* Captación centralizada en LeadCta (WhatsApp con mensaje, o Instagram si no hay número). */}
-            {publicEnv.NEXT_PUBLIC_WHATSAPP_URL ? (
-              <li>
-                <LeadCta inverted />
-              </li>
-            ) : null}
+            <li>
+              <LeadCta variant="inverted" />
+            </li>
           </ul>
         </div>
       </div>

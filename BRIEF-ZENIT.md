@@ -23,13 +23,13 @@ Precios, login, carrito, filtros, buscador, blog, multi-idioma, feed de Instagra
 | `/` | Home: todas las secciones de la sección 4 |
 | `/productos` | Catálogo completo (mismo componente de grilla que la home) |
 | `/productos/[slug]` | Ficha de producto (11 páginas, generadas estáticamente) |
-| ~~`/api/leads`~~ | POST del formulario de captación. **Fase de automatizaciones** (hoy el sitio es estático, ver sección 7) |
+| `/api/contact` | POST del formulario de contacto → correo a mercadeo. Lo atiende el contenedor `zenit-api`, no el sitio estático (sección 7) |
 | `/sitemap.xml`, `/robots.txt` | SEO |
 
 ## 3. Decisiones de arquitectura
 
 1. **Productos como archivos, no como base de datos.** `content/products/<slug>.json`, validados con Zod en el build. Son 11 productos y se añade quizás uno al año. El mismo esquema se mapea a una tabla de Postgres cuando llegue la Fase 3 (sync con el ERP Xenx).
-2. **Sin base de datos por ahora.** Los leads se envían por webhook (sección 7). La base de datos llega con la Fase 3; el formato del lead ya está pensado para pasar luego a una tabla compartida con lefre.com.ve.
+2. **Sin base de datos por ahora.** Los contactos se envían por correo a mercadeo (sección 7); el webhook de n8n llega en la fase de automatizaciones. La base de datos llega con la Fase 3; el formato del lead ya está pensado para pasar luego a una tabla compartida con lefre.com.ve.
 3. **Despliegue:** Docker + Traefik en el VPS de Hostinger, como el resto del proyecto.
 
 ## 4. Secciones de la home (en este orden)
@@ -40,7 +40,7 @@ Precios, login, carrito, filtros, buscador, blog, multi-idioma, feed de Instagra
 4. **Catálogo:** una sola página, dos grupos con título: **Agrícola (9)** y **Automotriz (2)** (los mismos grupos del ERP). Sin filtros ni buscador. Tarjeta: imagen, nombre, una línea descriptiva, botón "Ver ficha". Cierre con banda: "¿Eres ferretero? Pide Zenit a tu vendedor o regístrate".
 5. **Calidad y respaldo:** garantía de 1 año en las bombas (la que declara su empaque), directa por el distribuidor, y el respaldo de Inversiones Lefre. **Zenit no tiene certificaciones: no mostrar sellos ni normas.**
 6. **Dónde comprar:** 3 pasos: (1) pídelo a tu vendedor Lefre en la próxima visita; (2) si aún no eres cliente, regístrate como ferretería o distribuidor; (3) próximamente, haz tu pedido en el portal de lefre.com.ve. Mensaje de cobertura nacional y enlace a lefre.com.ve.
-7. **Captación:** CTA de WhatsApp en esta fase; formulario en la fase de automatizaciones (sección 7).
+7. **Captación:** formulario de contacto (se envía por correo) y botón de WhatsApp (sección 7).
 8. **Footer:** logo Zenit y "Marca de Inversiones Lefre"; enlaces Productos · Dónde comprar · Contacto · lefre.com.ve; datos de contacto; Instagram **@lefrevzla** (compartido con Lefre por ahora).
 
 Los textos exactos son borradores en español; déjalos fáciles de editar (un archivo `content/site.ts` o similar).
@@ -122,35 +122,35 @@ Una plantilla única alimentada por datos, para que agregar el producto 12 sea c
 4. "Incluye" (kits solares).
 5. Tablas de especificaciones por bloque (`specGroups`), en texto indexable.
 6. Botón **"Descargar ficha técnica (PDF)"** solo si hay archivo; curva y diagrama de conexión como imágenes si existen.
-7. CTA de contacto → WhatsApp con el producto y su código en el mensaje (fase actual; formulario con el producto preseleccionado en la fase de automatizaciones).
+7. CTA de contacto → WhatsApp con el producto y su código en el mensaje, y enlace "o déjanos tus datos" al formulario con el producto precargado.
 8. Hasta 3 productos relacionados de la misma familia o grupo.
 
 Sin precios en ningún lugar.
 
 ## 7. Captación de leads
 
-> **Fase actual (sitio 100 % estático, ver `CLAUDE.md`):** no hay formulario, `/api/leads` ni webhook. La captación es un CTA de WhatsApp con mensaje precargado ("Hola, soy ferretero de [ciudad] y quiero distribuir Zenit."; en las fichas, con el producto y su código), aislado en `components/leads/lead-cta.tsx`. Sin `NEXT_PUBLIC_WHATSAPP_URL`, el CTA lleva al chat de Instagram @lefrevzla. El formulario y la API se implementaron y probaron en un commit anterior (`9177559`) y se recuperan del historial de git en la fase de automatizaciones. **Lo que sigue en esta sección describe esa fase.**
+> **Fase actual (ver `CLAUDE.md`, "Alcance" y "Captación"):** sitio estático (nginx) más un único servicio de servidor, `zenit-api`, que envía el formulario por correo. El formulario se restauró del commit `9177559` cambiando el webhook por SMTP. El webhook de n8n y la base de datos llegan en la fase de automatizaciones.
 
-- **Campos:** nombre, empresa, ciudad, teléfono, email, mensaje (opcional, máx. 1000 caracteres) y consentimiento ("Al enviar, aceptas que Inversiones Lefre te contacte"). *Cambio del cliente:* se quitó el selector de productos de interés. Si se llega desde una ficha (`/?producto=<erpCode>#contacto`), el mensaje se precarga con "Me interesa: <producto>." y el código viaja en `product_interest`.
-- **Formato del lead** (sin base de datos por ahora): `created_at`, `origin` (valor `zenit.com.ve`), `name`, `company`, `city`, `phone`, `email`, `message` (texto, puede ir vacío), `product_interest` (lista de `erpCode`; vacía salvo que se llegue desde una ficha), `consent` (bool). Son los mismos campos que tendrá la tabla compartida con lefre.com.ve.
-- **`POST /api/leads`:** validación con Zod en servidor, honeypot, límite de intentos por IP, respuesta clara de éxito o error. No guarda nada en el servidor.
-- **Envío:** POST a `LEADS_WEBHOOK_URL` (será un flujo de n8n que decide dónde guardarlo). Si el webhook no está configurado o falla, responder con error claro y mostrar el botón de WhatsApp como alternativa; nunca perder el lead en silencio. En desarrollo sin webhook, aceptar el envío y avisar por consola sin imprimir datos personales.
-- **WhatsApp:** botón si existe `NEXT_PUBLIC_WHATSAPP_URL` (el número está pendiente).
-- Variables de entorno documentadas en `.env.example`.
+- **Campos:** nombre, empresa, ciudad, teléfono, email, mensaje (opcional, máx. 1000 caracteres) y consentimiento. Si se llega desde una ficha (`/?producto=<erpCode>#contacto`), el mensaje se precarga con "Me interesa: <producto>." y el código viaja en `product_interest` (producto de interés, opcional).
+- **`POST /api/contact`** (`services/zenit-api`): validación con Zod en servidor, honeypot, límite de intentos por IP, tamaño máximo del cuerpo, escape de todo el contenido del correo y errores genéricos. No guarda nada.
+- **Envío:** correo por SMTP (nodemailer) a `MAIL_TO=mercadeo@lefre.com.ve`, desde `MAIL_FROM` (un dominio con correo propio, no @zenit.com.ve) y con el correo del visitante en `Reply-To`. Si falla, el formulario muestra un error claro y el botón de WhatsApp como alternativa.
+- **WhatsApp:** botón con mensaje precargado (`NEXT_PUBLIC_WHATSAPP_URL`, https://wa.me/584244721107) en la sección de contacto, las fichas (con producto y código) y el footer. Instagram queda solo como enlace de redes.
+- Variables de entorno documentadas en `.env.example`: las del sitio son de build; las de SMTP son de ejecución y solo las lee `zenit-api`.
 
 ## 8. SEO
 
 - `lang="es-VE"`. Title y descripción únicos por página. Title de la home sugerido: *"Zenit | Bombas de agua y refrigerantes para ferreterías en Venezuela"*.
 - Metadata Open Graph con la imagen del producto o de la marca.
 - JSON-LD: `Organization` (Inversiones Lefre, marca Zenit) y `Product` en cada ficha (name, description, image, sku = `erpCode`, brand). **Sin `offers` ni precio.**
-- `sitemap.xml` con home, `/productos` y los 11 productos publicados; `robots.txt`.
+- `sitemap.xml` con home, `/productos` y los 11 productos publicados; `robots.txt`. En producción `NEXT_PUBLIC_SITE_INDEXABLE=true`; el código asume `false` si falta.
+- Favicon e íconos (`favicon.ico`, `icon.svg`, `apple-touch-icon.png`, `icon-192/512.png`, manifest) recortados del águila del logo oficial: `pnpm assets:icons`.
 - Alt descriptivo en cada imagen; datos técnicos como texto, no solo dentro del PDF.
 
 ## 9. Criterios de aceptación
 
 - Responsive de 360 px a escritorio; navegación y formulario usables con teclado.
 - Lighthouse móvil ≥ 90 en rendimiento, accesibilidad, buenas prácticas y SEO.
-- Pruebas con Playwright: la home carga; el catálogo muestra 11 productos en 2 grupos; las 11 fichas responden 200; el CTA abre WhatsApp con el mensaje correcto (fase actual); el sitemap tiene todas las URLs cuando el sitio es indexable.
+- Pruebas con Playwright: la home carga; el catálogo muestra 11 productos en 2 grupos; las 11 fichas responden 200; el CTA abre WhatsApp con el mensaje correcto; el formulario valida, envía por correo (SMTP simulado) y ofrece WhatsApp si falla; la API cubre validación, honeypot, límite por IP y escape; el sitemap tiene todas las URLs cuando el sitio es indexable.
 - Sin errores en consola. Imágenes optimizadas con `next/image`.
 - Auditoría de seguridad con Strix antes de entregar (el sitio recibe datos de contacto).
 - Fiel al manual de marca de Zenit (ver `CLAUDE.md`).
@@ -162,7 +162,7 @@ Sin precios en ningún lugar.
 3. Design tokens y componentes base desde el manual de marca.
 4. Home: secciones 1 a 6 y footer.
 5. Página de producto y `/productos`.
-6. Formulario y `/api/leads` con envío por webhook.
+6. Formulario y `/api/contact` (servicio `zenit-api`) con envío por correo.
 7. SEO: metadata, JSON-LD, sitemap, robots.
 8. Pruebas (Playwright), Lighthouse, Strix, Dockerfile y despliegue con Traefik.
 
@@ -170,7 +170,8 @@ Sin precios en ningún lugar.
 
 - Fichas corregidas (ver sección 5) y fichas o datos de los 6 productos sin ficha.
 - Originales de imágenes en alta resolución de los 11 productos.
-- Número de WhatsApp comercial y datos de contacto del footer.
-- URL del webhook de n8n que recibirá los leads (hasta entonces el formulario queda con el aviso de desarrollo).
+- Datos de contacto del footer (teléfono fijo, correo público).
+- Credenciales SMTP y remitente (`MAIL_FROM` @lefre.com.ve) para `zenit-api`.
+- Fase de automatizaciones: webhook de n8n en lugar del correo.
 - Cuenta de Instagram propia de Zenit (hoy se comparte @lefrevzla).
 - Productos nuevos previstos a mediano plazo (~1 año): ya soportado por la plantilla por datos.

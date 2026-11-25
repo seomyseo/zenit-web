@@ -22,6 +22,15 @@ export const metadata: Metadata = {
     siteName: site.name,
   },
   twitter: { card: "summary_large_image" },
+  // Íconos recortados del águila del logo oficial (pnpm assets:icons).
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
+  manifest: "/manifest.webmanifest",
   // Indexación controlada: noindex en todas las páginas hasta NEXT_PUBLIC_SITE_INDEXABLE=true.
   robots: publicEnv.NEXT_PUBLIC_SITE_INDEXABLE
     ? { index: true, follow: true }

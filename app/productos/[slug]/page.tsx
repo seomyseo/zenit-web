@@ -268,7 +268,15 @@ export default async function ProductPage({ params }: PageProps<"/productos/[slu
       <section className="bg-zenit-black text-zenit-white">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-5 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
           <p className="text-lg font-semibold sm:text-xl">{t.ctaText}</p>
-          <LeadCta message={productLeadMessage(product)} className="shrink-0" />
+          <div className="flex shrink-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
+            <LeadCta message={productLeadMessage(product)} />
+            <Link
+              href={`/?producto=${product.erpCode}#contacto`}
+              className="inline-flex min-h-10 items-center text-sm font-semibold text-zenit-white underline underline-offset-4 hover:text-zenit-white/85"
+            >
+              {site.leadForm.productFormLink}
+            </Link>
+          </div>
         </div>
       </section>
 

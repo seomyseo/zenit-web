@@ -20,3 +20,4 @@ blob-report
 Dockerfile
 docker-compose.yml
 .screenshots
+services/zenit-api/dist
