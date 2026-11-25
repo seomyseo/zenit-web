@@ -23,7 +23,7 @@ Precios, login, carrito, filtros, buscador, blog, multi-idioma, feed de Instagra
 | `/` | Home: todas las secciones de la sección 4 |
 | `/productos` | Catálogo completo (mismo componente de grilla que la home) |
 | `/productos/[slug]` | Ficha de producto (11 páginas, generadas estáticamente) |
-| `/api/leads` | POST del formulario de captación |
+| ~~`/api/leads`~~ | POST del formulario de captación. **Fase de automatizaciones** (hoy el sitio es estático, ver sección 7) |
 | `/sitemap.xml`, `/robots.txt` | SEO |
 
 ## 3. Decisiones de arquitectura
@@ -40,7 +40,7 @@ Precios, login, carrito, filtros, buscador, blog, multi-idioma, feed de Instagra
 4. **Catálogo:** una sola página, dos grupos con título: **Agrícola (9)** y **Automotriz (2)** (los mismos grupos del ERP). Sin filtros ni buscador. Tarjeta: imagen, nombre, una línea descriptiva, botón "Ver ficha". Cierre con banda: "¿Eres ferretero? Pide Zenit a tu vendedor o regístrate".
 5. **Calidad y respaldo:** garantía de 1 año en las bombas (la que declara su empaque), directa por el distribuidor, y el respaldo de Inversiones Lefre. **Zenit no tiene certificaciones: no mostrar sellos ni normas.**
 6. **Dónde comprar:** 3 pasos: (1) pídelo a tu vendedor Lefre en la próxima visita; (2) si aún no eres cliente, regístrate como ferretería o distribuidor; (3) próximamente, haz tu pedido en el portal de lefre.com.ve. Mensaje de cobertura nacional y enlace a lefre.com.ve.
-7. **Captación:** formulario (sección 7).
+7. **Captación:** CTA de WhatsApp en esta fase; formulario en la fase de automatizaciones (sección 7).
 8. **Footer:** logo Zenit y "Marca de Inversiones Lefre"; enlaces Productos · Dónde comprar · Contacto · lefre.com.ve; datos de contacto; Instagram **@lefrevzla** (compartido con Lefre por ahora).
 
 Los textos exactos son borradores en español; déjalos fáciles de editar (un archivo `content/site.ts` o similar).
@@ -122,12 +122,14 @@ Una plantilla única alimentada por datos, para que agregar el producto 12 sea c
 4. "Incluye" (kits solares).
 5. Tablas de especificaciones por bloque (`specGroups`), en texto indexable.
 6. Botón **"Descargar ficha técnica (PDF)"** solo si hay archivo; curva y diagrama de conexión como imágenes si existen.
-7. CTA **"Quiero distribuir Zenit"** → formulario con este producto preseleccionado.
+7. CTA de contacto → WhatsApp con el producto y su código en el mensaje (fase actual; formulario con el producto preseleccionado en la fase de automatizaciones).
 8. Hasta 3 productos relacionados de la misma familia o grupo.
 
 Sin precios en ningún lugar.
 
 ## 7. Captación de leads
+
+> **Fase actual (sitio 100 % estático, ver `CLAUDE.md`):** no hay formulario, `/api/leads` ni webhook. La captación es un CTA de WhatsApp con mensaje precargado ("Hola, soy ferretero de [ciudad] y quiero distribuir Zenit."; en las fichas, con el producto y su código), aislado en `components/leads/lead-cta.tsx`. Sin `NEXT_PUBLIC_WHATSAPP_URL`, el CTA lleva al chat de Instagram @lefrevzla. El formulario y la API se implementaron y probaron en un commit anterior (`9177559`) y se recuperan del historial de git en la fase de automatizaciones. **Lo que sigue en esta sección describe esa fase.**
 
 - **Campos:** nombre, empresa, ciudad, teléfono, email, mensaje (opcional, máx. 1000 caracteres) y consentimiento ("Al enviar, aceptas que Inversiones Lefre te contacte"). *Cambio del cliente:* se quitó el selector de productos de interés. Si se llega desde una ficha (`/?producto=<erpCode>#contacto`), el mensaje se precarga con "Me interesa: <producto>." y el código viaja en `product_interest`.
 - **Formato del lead** (sin base de datos por ahora): `created_at`, `origin` (valor `zenit.com.ve`), `name`, `company`, `city`, `phone`, `email`, `message` (texto, puede ir vacío), `product_interest` (lista de `erpCode`; vacía salvo que se llegue desde una ficha), `consent` (bool). Son los mismos campos que tendrá la tabla compartida con lefre.com.ve.
@@ -148,7 +150,7 @@ Sin precios en ningún lugar.
 
 - Responsive de 360 px a escritorio; navegación y formulario usables con teclado.
 - Lighthouse móvil ≥ 90 en rendimiento, accesibilidad, buenas prácticas y SEO.
-- Pruebas con Playwright: la home carga; el catálogo muestra 11 productos en 2 grupos; las 11 fichas responden 200; el formulario envía el lead al webhook (simulado en las pruebas) y muestra el éxito; el sitemap tiene todas las URLs.
+- Pruebas con Playwright: la home carga; el catálogo muestra 11 productos en 2 grupos; las 11 fichas responden 200; el CTA abre WhatsApp con el mensaje correcto (fase actual); el sitemap tiene todas las URLs cuando el sitio es indexable.
 - Sin errores en consola. Imágenes optimizadas con `next/image`.
 - Auditoría de seguridad con Strix antes de entregar (el sitio recibe datos de contacto).
 - Fiel al manual de marca de Zenit (ver `CLAUDE.md`).

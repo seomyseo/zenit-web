@@ -2,14 +2,15 @@
  * Genera las imágenes publicables de producto en public/products/ a partir de
  * content/source/ (que nunca se sirve ni entra a la imagen Docker).
  *
- * - Fotos: content/source/Products/<erpCode>-1.png → public/products/<slug>.png
+ * - Fotos: content/source/Products/<erpCode>-1.png → public/products/<slug>.webp
+ *   (1000 px, WebP con transparencia). El sitio es estático: nadie optimiza al vuelo.
  * - Curva y diagramas: se rasteriza la página del PDF con pdftoppm (poppler)
  *   y se recorta con sharp. Recortes medidos sobre páginas a 200 dpi (1700×2200).
  *
  * Uso: pnpm assets:products   (requiere pdftoppm en PATH o en la variable PDFTOPPM)
  */
 import { execFileSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import sharp from "sharp";
@@ -19,6 +20,7 @@ const SOURCE = path.join(ROOT, "content", "source", "Products");
 const OUT = path.join(ROOT, "public", "products");
 const PDFTOPPM = process.env.PDFTOPPM ?? "pdftoppm";
 const DPI = 200;
+const PHOTO_SIZE = 1000;
 
 const photos: Record<string, string> = {
   "0021-0318": "bomba-centrifuga-solar-cobre-1hp",
@@ -63,9 +65,11 @@ async function main() {
   mkdirSync(OUT, { recursive: true });
 
   for (const [erpCode, slug] of Object.entries(photos)) {
-    // Copia byte a byte: next/image genera AVIF/WebP al servir.
-    copyFileSync(path.join(SOURCE, `${erpCode}-1.png`), path.join(OUT, `${slug}.png`));
-    console.log(`foto  ${erpCode} → ${slug}.png`);
+    const info = await sharp(path.join(SOURCE, `${erpCode}-1.png`))
+      .resize({ width: PHOTO_SIZE, height: PHOTO_SIZE, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 80, alphaQuality: 90, effort: 6 })
+      .toFile(path.join(OUT, `${slug}.webp`));
+    console.log(`foto  ${erpCode} → ${slug}.webp (${Math.round(info.size / 1024)} KB)`);
   }
 
   const tmp = mkdtempSync(path.join(tmpdir(), "zenit-pdf-"));

@@ -1,0 +1,46 @@
+# zenit.com.ve detrás del Traefik que ya corre en el VPS.
+# No publica puertos: Traefik llega por la red externa "traefik".
+# Actualizar: git pull && docker compose up -d --build
+
+services:
+  zenit-web:
+    build:
+      context: .
+      # Variables de BUILD (se incrustan al compilar). Se leen de .env (no va a git).
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?Falta NEXT_PUBLIC_SITE_URL en .env}
+        NEXT_PUBLIC_WHATSAPP_URL: ${NEXT_PUBLIC_WHATSAPP_URL:-}
+        NEXT_PUBLIC_SITE_INDEXABLE: ${NEXT_PUBLIC_SITE_INDEXABLE:-false}
+    image: zenit-web:latest
+    container_name: zenit-web
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+
+      # Router HTTPS (HTTP → HTTPS ya lo redirige Traefik). Incluye www para que el
+      # certificado (TLS-ALPN, myresolver) cubra ambos nombres.
+      - traefik.http.routers.zenit.rule=Host(`zenit.com.ve`) || Host(`www.zenit.com.ve`)
+      - traefik.http.routers.zenit.entrypoints=websecure
+      - traefik.http.routers.zenit.tls=true
+      - traefik.http.routers.zenit.tls.certresolver=myresolver
+      - traefik.http.routers.zenit.middlewares=zenit-www-redirect
+
+      # Para proteger con usuario y contraseña mientras el sitio no esté aprobado,
+      # sustituir la línea de middlewares de arriba por estas dos (ver README):
+      # - traefik.http.routers.zenit.middlewares=zenit-www-redirect,zenit-auth
+      # - traefik.http.middlewares.zenit-auth.basicauth.users=${ZENIT_BASIC_AUTH_USERS}
+
+      # www.zenit.com.ve → zenit.com.ve (301). En compose, "$" se escapa como "$$".
+      - traefik.http.middlewares.zenit-www-redirect.redirectregex.regex=^https://www\.zenit\.com\.ve/(.*)
+      - traefik.http.middlewares.zenit-www-redirect.redirectregex.replacement=https://zenit.com.ve/$${1}
+      - traefik.http.middlewares.zenit-www-redirect.redirectregex.permanent=true
+
+      # nginx escucha en el 80 interno.
+      - traefik.http.services.zenit.loadbalancer.server.port=80
+
+networks:
+  traefik:
+    external: true

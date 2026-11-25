@@ -1,7 +1,7 @@
 import { ArrowUpRight, AtSign } from "lucide-react";
 import Link from "next/link";
 import { ZenitLogo } from "@/components/brand/zenit-logo";
-import { WhatsAppLink } from "@/components/site/whatsapp-link";
+import { LeadCta } from "@/components/leads/lead-cta";
 import { site } from "@/content/site";
 import { publicEnv } from "@/lib/env";
 
@@ -60,12 +60,10 @@ export function SiteFooter() {
                 <span className="sr-only">{header.newTab}</span>
               </a>
             </li>
+            {/* Captación centralizada en LeadCta (WhatsApp con mensaje, o Instagram si no hay número). */}
             {publicEnv.NEXT_PUBLIC_WHATSAPP_URL ? (
               <li>
-                <WhatsAppLink
-                  href={publicEnv.NEXT_PUBLIC_WHATSAPP_URL}
-                  className="border-zenit-white text-zenit-white hover:bg-zenit-white hover:text-zenit-green"
-                />
+                <LeadCta inverted />
               </li>
             ) : null}
           </ul>

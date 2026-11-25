@@ -19,3 +19,4 @@ blob-report
 *.md
 Dockerfile
 docker-compose.yml
+.screenshots

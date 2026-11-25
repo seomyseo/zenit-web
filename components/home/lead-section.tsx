@@ -1,31 +1,24 @@
-import { ArrowUpRight, AtSign, Globe, MessageCircle, type LucideIcon } from "lucide-react";
-import { LeadForm } from "@/components/leads/lead-form";
+import { ArrowUpRight, AtSign, Globe, type LucideIcon } from "lucide-react";
+import { LeadCta } from "@/components/leads/lead-cta";
 import { Reveal } from "@/components/motion/reveal";
 import { FormDots } from "@/components/ui/form-dots";
 import { GlobeWireframe } from "@/components/ui/globe-wireframe";
 import { site } from "@/content/site";
-import { publicEnv } from "@/lib/env";
-import { getPublishedProducts } from "@/lib/products";
 
 type ContactLink = { icon: LucideIcon; label: string; href: string };
 
 /**
  * Sección de captación. Estructura adaptada de "contact-with-globe" (21st.dev):
  * encabezado centrado, columna con canales reales y globo centrado en Venezuela,
- * y tarjeta con el formulario de leads (validación, honeypot, webhook).
+ * y tarjeta con el CTA de WhatsApp (LeadCta). En la fase de automatizaciones, LeadCta
+ * se sustituye por un formulario con webhook.
  */
 export function LeadSection() {
   const { leadForm, instagram, owner, header } = site;
-  // Solo para precargar el mensaje cuando se llega desde una ficha.
-  const products = getPublishedProducts().map((p) => ({ erpCode: p.erpCode, name: p.name }));
-
   // Solo canales reales: teléfono y correo siguen pendientes del cliente (no se inventan).
   const links: ContactLink[] = [
     { icon: AtSign, label: `Instagram ${instagram.handle}`, href: instagram.url },
     { icon: Globe, label: leadForm.aside.website, href: owner.url },
-    ...(publicEnv.NEXT_PUBLIC_WHATSAPP_URL
-      ? [{ icon: MessageCircle, label: leadForm.whatsapp, href: publicEnv.NEXT_PUBLIC_WHATSAPP_URL }]
-      : []),
   ];
 
   return (
@@ -41,8 +34,8 @@ export function LeadSection() {
           <p className="max-w-md text-base text-zenit-gray">{leadForm.lead}</p>
         </Reveal>
 
-        <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-          <Reveal delay={0.1} className="order-2 flex flex-col gap-6 lg:sticky lg:top-28 lg:order-1">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+          <Reveal delay={0.1} className="order-2 flex flex-col gap-6 lg:order-1">
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-zenit-black">{leadForm.aside.title}</h3>
               <p className="max-w-xs text-sm leading-relaxed text-zenit-gray">{leadForm.aside.text}</p>
@@ -91,7 +84,20 @@ export function LeadSection() {
               <p className="text-sm text-zenit-gray">{leadForm.card.text}</p>
             </div>
             <FormDots />
-            <LeadForm products={products} whatsappUrl={publicEnv.NEXT_PUBLIC_WHATSAPP_URL} />
+            <ol className="flex flex-col gap-3">
+              {leadForm.card.steps.map((step, index) => (
+                <li key={step} className="flex items-center gap-3 text-sm text-zenit-black">
+                  <span
+                    aria-hidden="true"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-full bg-zenit-green/10 font-display text-sm text-zenit-green"
+                  >
+                    {index + 1}
+                  </span>
+                  {step}
+                </li>
+              ))}
+            </ol>
+            <LeadCta className="w-full sm:w-auto sm:self-start" />
           </Reveal>
         </div>
       </div>

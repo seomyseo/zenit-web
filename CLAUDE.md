@@ -5,15 +5,22 @@ Sitio de marca de **Zenit**, marca propia de Inversiones Lefre (mayorista de fer
 - Textos de la web en español (Venezuela). Código, campos y rutas de datos en inglés.
 - Mensajes de commit en español, formato convencional (`feat:`, `fix:`, `chore:`).
 
+## Alcance de esta fase
+
+**Sitio 100 % estático, sin automatizaciones.** Esta fase publica la web de marca y el catálogo informativo. Quedan fuera por ahora, y no se implementan hasta que se indique: `/api/leads`, webhook de n8n, formularios con envío, base de datos y cualquier proceso de servidor. El único canal de contacto es WhatsApp. Cuando lleguen las automatizaciones se vuelve a `output: "standalone"` sin rehacer el diseño (ver "Captación" más abajo).
+
 ## Stack
 
 - Next.js (App Router) + TypeScript estricto + Tailwind CSS + shadcn/ui + Motion.
-- Zod para validar datos y formularios. **Sin base de datos por ahora**: los productos son archivos JSON y los leads salen por webhook (ver el brief). No agregar Postgres, ORM ni migraciones.
+- **Exportación estática**: `output: "export"` en `next.config` y `images: { unoptimized: true }` (la optimización de imágenes de Next necesita servidor). El resultado es la carpeta `out/` con HTML puro. No usar nada que requiera servidor: route handlers dinámicos, middleware, Server Actions, `revalidate`, `cookies()` ni `headers()`. Todas las rutas dinámicas con `generateStaticParams`; `sitemap.ts` y `robots.ts` con `export const dynamic = "force-static"`.
+- Zod para validar los datos de producto. **Sin base de datos por ahora**: los productos son archivos JSON (ver el brief). No agregar Postgres, ORM ni migraciones.
 - Gestor de paquetes: el que ya use el repo; si es nuevo, pnpm.
-- Despliegue: Docker + Traefik en VPS de Hostinger (`Dockerfile` y `docker-compose.yml` en la raíz).
-- Páginas estáticas siempre que se pueda; servidor solo para `/api/leads`.
+- Despliegue: Docker + Traefik. Imagen multietapa: build con pnpm y `out/` servido con nginx alpine. `Dockerfile` y `docker-compose.yml` en la raíz, con un README de despliegue para repetirlo en un VPS nuevo.
+  - Se prueba primero en el VPS propio de VeneTecnologías, con `zenit.com.ve` apuntando a él. Después se mueve al VPS que contrate el cliente: solo cambia el registro A del DNS.
+  - El dominio está en nic.ve y no tiene correo (sin registros MX): no hay nada que preservar. Antes de cambiar DNS, anotar los registros actuales.
+  - Mientras el sitio no esté aprobado, se protege con `SITE_INDEXABLE=false` (ver "Seguridad") y, opcionalmente, un middleware `basicAuth` de Traefik controlado por variable de entorno.
 
-Scripts que debe tener `package.json`: `dev`, `build`, `start`, `lint`, `typecheck`, `test`. Antes de dar algo por terminado: `lint`, `typecheck` y `build` sin errores.
+Scripts que debe tener `package.json`: `dev`, `build`, `start` (sirve `out/` en local para revisar el resultado final), `lint`, `typecheck`, `test`. Antes de dar algo por terminado: `lint`, `typecheck` y `build` sin errores, y comprobar que `out/` se genera completo.
 
 ## Marca Zenit
 
@@ -71,30 +78,39 @@ Industrial, técnica y sobria: fondos blancos y negros con el verde como acento,
 - Animación con Motion, con propósito. Dirección aprobada por el cliente: concepto **"Altura"** (hero A: rotación de productos, corte diagonal verde, cifras que suben, lema con paralaje) y banner solar (sol que sube con el scroll y línea de agua). Fuera de esas piezas, movimiento sutil (entradas de sección, hover).
 - Siempre: respetar `prefers-reduced-motion` (sin rotación automática, sin paralaje, valores finales a la vista); no animar la entrada del H1 ni de la imagen principal (LCP); no agregar GSAP ni Lenis sin una razón concreta.
 - Componentes: partir de shadcn/ui; 21st.dev y el MCP de shadcn para generar piezas; ajustar siempre a los tokens de arriba.
-- Imágenes con `next/image`, `alt` descriptivo y tamaños explícitos. Las imágenes de producto son las de `content/source/`.
+- Imágenes con `next/image` (sin optimización, ver Stack), `alt` descriptivo y tamaños explícitos. Las imágenes de producto son las de `content/source/`. Preparar las fotos ya redimensionadas y comprimidas, porque en un sitio estático nadie las optimiza al vuelo.
 - Accesibilidad: foco visible, navegación por teclado, jerarquía de encabezados correcta, contraste según la tabla de arriba.
+- **Pulido visual en pausa.** Los ajustes de diseño de la home (hero, etiquetas de variación, encuadre de fotos, movimiento) los decide el cliente más adelante y se registran en `content/DISENO-PENDIENTE.md`. No aplicarlos hasta que se indique. Mientras tanto, usar estilos sobrios con los componentes existentes.
 
 ## Datos y contenido
 - Productos: `content/products/<slug>.json`, validados con Zod (esquema en el brief). **No inventar datos técnicos**: si no está en la ficha, la fila no existe.
 - Los textos editables de la web viven en un solo archivo (`content/site.ts`), no dispersos en los componentes.
 - **Sin precios en ningún lugar de la web.** Sin certificaciones ni sellos (Zenit no los tiene). La garantía es de **1 año en las bombas** (la que declara su empaque), directa por el distribuidor. No mencionar garantía en las fichas de refrigerantes, presostatos ni control hasta que el cliente la confirme para ellos.
+- **Afirmaciones ecológicas:** solo se respaldan en las bombas solares (ZBC-002S, ZBP-001S, ZBS-001S), que funcionan con paneles. No escribir "ecológico", "sostenible" ni similares para las bombas eléctricas, presostatos o refrigerantes, y no presentar la marca entera como ecológica.
 - Lo que se omite o se corrige por ahora de las fichas se registra en `content/PENDIENTES.md`.
 
+## Captación (WhatsApp)
+- El contacto es un CTA a WhatsApp con mensaje precargado (por ejemplo, "Soy ferretero de [ciudad] y quiero distribuir Zenit"), usando `NEXT_PUBLIC_WHATSAPP_URL`.
+- Todo el código de captación vive aislado en un único componente (`LeadCta`), para poder sustituirlo más adelante por un formulario con webhook sin tocar el resto.
+- No crear `/api/leads`, ni formulario con envío, ni usar `LEADS_WEBHOOK_URL` en esta fase.
+
 ## Herramientas de verificación
-- **Playwright** (MCP y pruebas en `tests/`): comprobar visualmente cada sección terminada en móvil y escritorio, y probar el flujo del formulario.
+- **Playwright** (MCP y pruebas en `tests/`): comprobar visualmente cada sección terminada en móvil y escritorio, y probar que el CTA de WhatsApp abre el enlace con el mensaje correcto.
 - **Context7**: consultar la documentación actual de Next.js, Tailwind, shadcn/ui y Motion antes de usar APIs que no se recuerden con seguridad.
-- **Strix**: auditoría de seguridad antes de entregar (el sitio guarda datos de contacto).
+- **Strix**: auditoría de seguridad antes de entregar el sitio al cliente (cabeceras, dependencias, configuración de nginx y Traefik).
 - **Lighthouse** móvil ≥ 90 en las cuatro categorías.
 
 ## Seguridad
 - Secretos solo en variables de entorno; `.env` fuera de git y `.env.example` actualizado.
-- `/api/leads`: validar en servidor, honeypot, límite de intentos por IP, nunca devolver detalles internos en los errores.
-- No registrar en logs teléfonos ni emails.
+- **Indexación controlada:** `NEXT_PUBLIC_SITE_INDEXABLE` (por defecto `false`). Si es `false`, todas las páginas llevan `<meta name="robots" content="noindex, nofollow">` y `robots.txt` devuelve `Disallow: /`; el sitemap no se publica. Se cambia a `true` solo al lanzar. Al ser estático, es una variable de build: hay que reconstruir la imagen para cambiarla.
+- Cabeceras de seguridad en la configuración de nginx (`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` o CSP) y HTTPS forzado desde Traefik.
+- Cuando se reactive `/api/leads` (fase de automatizaciones): validar en servidor, honeypot, límite de intentos por IP, nunca devolver detalles internos en los errores, y no registrar en logs teléfonos ni emails.
 
 ## No hacer
 - No cambiar logo, colores ni tipografías de marca por gusto propio.
 - No usar el lema "Impulsando el mañana con la energía de hoy" en el sitio: aparece en las fichas de las bombas, pero el lema oficial, confirmado por el cliente, es TECNOLOGÍA DE ALTURA.
 - No agregar login, carrito, precios, blog ni filtros (fuera de alcance, ver el brief).
+- No agregar rutas de API, procesos de servidor ni integraciones (n8n, webhooks, bases de datos) en esta fase.
 - No instalar dependencias pesadas para algo que se resuelve con CSS.
 
 ## Pendientes de marca

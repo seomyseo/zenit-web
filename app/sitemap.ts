@@ -2,6 +2,12 @@ import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo/json-ld";
 import { getPublishedProducts } from "@/lib/products";
 
+export const dynamic = "force-static";
+
+/**
+ * Sitemap estático. Si NEXT_PUBLIC_SITE_INDEXABLE no es "true", scripts/postbuild.ts
+ * borra out/sitemap.xml para que no se publique (CLAUDE.md, Seguridad).
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), changeFrequency: "monthly", priority: 1 },

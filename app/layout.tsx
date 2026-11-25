@@ -22,6 +22,10 @@ export const metadata: Metadata = {
     siteName: site.name,
   },
   twitter: { card: "summary_large_image" },
+  // Indexación controlada: noindex en todas las páginas hasta NEXT_PUBLIC_SITE_INDEXABLE=true.
+  robots: publicEnv.NEXT_PUBLIC_SITE_INDEXABLE
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {

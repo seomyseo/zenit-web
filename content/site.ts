@@ -107,7 +107,7 @@ export const site = {
       },
       {
         title: "¿Aún no eres cliente?",
-        text: "Regístrate como ferretería o distribuidor con el formulario de esta página.",
+        text: "Escríbenos por WhatsApp desde esta página y te registramos como ferretería o distribuidor.",
       },
       {
         title: "Próximamente, pedidos en línea",
@@ -118,7 +118,7 @@ export const site = {
     ownerCta: "Conoce Inversiones Lefre",
   },
 
-  /** Banner antes del formulario: concepto "El sol mueve el agua". */
+  /** Banner antes del contacto: concepto "El sol mueve el agua". */
   solarBanner: {
     eyebrow: "Bombeo solar",
     title: "Agua con la energía del sol",
@@ -130,10 +130,14 @@ export const site = {
     featuredErpCode: "0021-0318",
   },
 
+  /**
+   * Captación de esta fase: CTA de WhatsApp con mensaje precargado (sin formulario
+   * ni webhook). Si NEXT_PUBLIC_WHATSAPP_URL no está definida, el CTA lleva a Instagram.
+   */
   leadForm: {
     eyebrow: "Contacto",
     title: "Quiero distribuir Zenit",
-    lead: "Déjanos tus datos y un asesor de Inversiones Lefre te contactará para que tengas Zenit en tu ferretería.",
+    lead: "Escríbenos por WhatsApp y un asesor de Inversiones Lefre te atenderá para que tengas Zenit en tu ferretería.",
     aside: {
       title: "Habla con nosotros",
       text: "Atendemos a ferreterías y distribuidores de toda Venezuela a través de la red de Inversiones Lefre.",
@@ -141,36 +145,15 @@ export const site = {
       website: "lefre.com.ve",
     },
     card: {
-      title: "Envía tus datos",
-      text: "Completa el formulario y te contactaremos.",
-    },
-    fields: {
-      name: { label: "Nombre y apellido", autoComplete: "name" },
-      company: { label: "Empresa o ferretería", autoComplete: "organization" },
-      city: { label: "Ciudad", autoComplete: "address-level2" },
-      phone: { label: "Teléfono", autoComplete: "tel", hint: "Con código de área, por ejemplo 0414 123 4567" },
-      email: { label: "Correo electrónico", autoComplete: "email" },
-      message: {
-        label: "Mensaje",
-        hint: "Opcional. Cuéntanos qué productos te interesan o qué necesitas.",
-        /** Texto inicial cuando se llega desde una ficha de producto. */
-        prefill: "Me interesa: {producto}.",
-      },
-    },
-    consent: "Al enviar, aceptas que Inversiones Lefre te contacte.",
-    submit: "Enviar solicitud",
-    sending: "Enviando…",
-    success: {
-      title: "¡Gracias! Recibimos tu solicitud.",
-      text: "Un asesor de Inversiones Lefre te contactará pronto.",
-      again: "Enviar otra solicitud",
-    },
-    errors: {
-      generic: "No pudimos enviar tu solicitud. Inténtalo de nuevo en unos minutos.",
-      network: "No hay conexión. Revisa tu internet e inténtalo de nuevo.",
-      fields: "Revisa los campos marcados.",
+      title: "Escríbenos",
+      text: "Cuéntanos qué productos te interesan, tu ciudad y el nombre de tu ferretería.",
+      steps: ["Toca el botón.", "Se abre el chat con el mensaje listo.", "Envíalo y te respondemos."],
     },
     whatsapp: "Escríbenos por WhatsApp",
+    instagram: "Escríbenos por Instagram",
+    /** Mensajes precargados ({producto} y {codigo} se reemplazan en las fichas). */
+    message: "Hola, soy ferretero de [ciudad] y quiero distribuir Zenit.",
+    productMessage: "Hola, soy ferretero de [ciudad] y me interesa {producto} ({codigo}).",
   },
 
   footer: {
@@ -200,7 +183,7 @@ export const site = {
     wiring: "Diagrama de conexión",
     datasheet: "Descargar ficha técnica (PDF)",
     cta: "Quiero distribuir Zenit",
-    ctaText: "¿Te interesa este producto para tu ferretería? Te contactamos.",
+    ctaText: "¿Te interesa este producto para tu ferretería? Escríbenos y te atendemos.",
     related: "Productos relacionados",
     noPrice: "Consulta disponibilidad con tu vendedor Lefre.",
   },

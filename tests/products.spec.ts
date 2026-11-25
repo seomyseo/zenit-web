@@ -50,18 +50,27 @@ test.describe("fichas de producto", () => {
 test.describe("SEO", () => {
   test.skip(({ isMobile }) => isMobile, "basta con un proyecto");
 
-  test("el sitemap tiene la home, /productos y las 11 fichas", async ({ request }) => {
-    const xml = await (await request.get("/sitemap.xml")).text();
-    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]!).pathname);
+  // El build decide si el sitio es indexable (NEXT_PUBLIC_SITE_INDEXABLE): se deduce de robots.txt.
+  test("indexación coherente entre robots.txt, sitemap y meta robots", async ({ request, page }) => {
+    const robots = await (await request.get("/robots.txt")).text();
+    const indexable = /Sitemap:/.test(robots);
+    const sitemap = await request.get("/sitemap.xml");
+    await page.goto("/");
+    const meta = await page.locator('meta[name="robots"]').getAttribute("content");
+
+    if (!indexable) {
+      expect(robots).toMatch(/Disallow: \/\s*$/m);
+      expect(sitemap.status()).toBe(404);
+      expect(meta).toBe("noindex, nofollow");
+      return;
+    }
+
+    expect(meta).toBe("index, follow");
+    expect(robots).toMatch(/Disallow: \/lab\//);
+    const urls = [...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]!).pathname);
     expect(urls).toContain("/");
     expect(urls).toContain("/productos");
     for (const product of products) expect(urls).toContain(`/productos/${product.slug}`);
     expect(urls).toHaveLength(2 + products.length);
-  });
-
-  test("robots.txt bloquea /api/ y apunta al sitemap", async ({ request }) => {
-    const robots = await (await request.get("/robots.txt")).text();
-    expect(robots).toMatch(/Disallow: \/api\//);
-    expect(robots).toMatch(/Sitemap: .*\/sitemap\.xml/);
   });
 });

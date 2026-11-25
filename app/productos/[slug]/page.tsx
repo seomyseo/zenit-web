@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LeadCta, productLeadMessage } from "@/components/leads/lead-cta";
 import { ProductCard } from "@/components/products/product-card";
 import { toCard } from "@/lib/card-data";
 import { Button } from "@/components/ui/button";
@@ -160,9 +161,7 @@ export default async function ProductPage({ params }: PageProps<"/productos/[slu
           ) : null}
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="xl">
-              <Link href={`/?producto=${product.erpCode}#contacto`}>{t.cta}</Link>
-            </Button>
+            <LeadCta message={productLeadMessage(product)} />
             {datasheet ? (
               <Button
                 asChild
@@ -269,9 +268,7 @@ export default async function ProductPage({ params }: PageProps<"/productos/[slu
       <section className="bg-zenit-black text-zenit-white">
         <div className="mx-auto flex max-w-7xl flex-col items-start gap-5 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between">
           <p className="text-lg font-semibold sm:text-xl">{t.ctaText}</p>
-          <Button asChild size="xl" className="shrink-0">
-            <Link href={`/?producto=${product.erpCode}#contacto`}>{t.cta}</Link>
-          </Button>
+          <LeadCta message={productLeadMessage(product)} className="shrink-0" />
         </div>
       </section>
 

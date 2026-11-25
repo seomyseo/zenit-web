@@ -1,6 +1,6 @@
 /**
  * Capturas de página completa para revisión de diseño (no son pruebas).
- * Levanta `next start` sobre el build actual, recorre la página para disparar
+ * Sirve out/ (scripts/serve-out.mjs) del build actual, recorre la página para disparar
  * las animaciones de entrada y guarda PNG en .screenshots/ (ignorada por git).
  *
  * Uso: pnpm build && pnpm capture [ruta]   (por defecto "/")
@@ -42,9 +42,9 @@ async function scrollThrough(page: Page) {
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
-  // next se lanza directo con node (sin shell) para poder cerrarlo con certeza al terminar.
-  const nextBin = path.resolve(import.meta.dirname, "..", "node_modules", "next", "dist", "bin", "next");
-  const server = spawn(process.execPath, [nextBin, "start", "--port", String(PORT)], {
+  // Sitio estático: se sirve out/ con las reglas de nginx (sin shell, para cerrarlo con certeza).
+  const serveOut = path.resolve(import.meta.dirname, "serve-out.mjs");
+  const server = spawn(process.execPath, [serveOut, "--port", String(PORT)], {
     stdio: "ignore",
   });
   try {

@@ -1,14 +1,15 @@
 import type { NextConfig } from "next";
 
+/**
+ * Fase estática (CLAUDE.md, "Alcance de esta fase"): `next build` genera out/ con
+ * HTML puro, que nginx sirve. Sin servidor no hay optimización de imágenes: las fotos
+ * se preparan ya comprimidas (pnpm assets:products). Para la fase de automatizaciones
+ * se vuelve a output: "standalone".
+ */
 const nextConfig: NextConfig = {
-  output: "standalone",
-  poweredByHeader: false,
-  // La API de leads valida los códigos de producto leyendo los JSON en tiempo de ejecución.
-  outputFileTracingIncludes: {
-    "/api/leads": ["./content/products/*.json"],
-  },
+  output: "export",
   images: {
-    formats: ["image/avif", "image/webp"],
+    unoptimized: true,
   },
   turbopack: {
     rules: {
